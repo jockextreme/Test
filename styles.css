@@ -1,60 +1,32 @@
-:root {
-    --primary-color: #0d6efd;
-    --secondary-color: #6c757d;
-    --background-color: #f8f9fa;
-    --text-color: #212529;
-    --card-bg: #ffffff;
-}
-
-.dark-mode {
-    --primary-color: #0d6efd;
-    --secondary-color: #adb5bd;
-    --background-color: #212529;
-    --text-color: #f8f9fa;
-    --card-bg: #2c3034;
-}
-
 body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.card {
-    background-color: var(--card-bg);
-    border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    transition: transform 0.2s, box-shadow 0.2s;
-    margin-bottom: 20px;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    background-color: #f8f9fa;
+    padding-top: 20px;
 }
 
 .video-card {
     margin-bottom: 20px;
     transition: transform 0.2s;
+    background-color: white;
     border-radius: 8px;
     overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .video-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .video-thumbnail {
     width: 100%;
-    height: 180px;
+    height: 200px;
     object-fit: cover;
-    border-radius: 8px 8px 0 0;
 }
 
 .video-title {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
-    margin: 10px 0 5px;
+    margin: 10px 0;
     height: 40px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -63,67 +35,14 @@ body {
     -webkit-box-orient: vertical;
 }
 
-.video-meta {
-    font-size: 12px;
-    color: var(--secondary-color);
+.video-duration {
+    color: #6c757d;
+    font-size: 14px;
 }
 
-.category-badge {
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.category-badge:hover {
-    transform: scale(1.05);
-}
-
-#videoPlayer {
-    width: 100%;
-    height: 500px;
+#videoDetail {
+    background-color: white;
+    padding: 20px;
     border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-@media (max-width: 768px) {
-    #videoPlayer {
-        height: 300px;
-    }
-    
-    .video-thumbnail {
-        height: 150px;
-    }
-}
-
-.bookmark-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-}
-
-.bookmark-btn.bookmarked {
-    color: gold;
-}
-
-.bookmark-btn:hover {
-    background: rgba(0, 0, 0, 0.7);
-}
-
-.actress-tag {
-    cursor: pointer;
-    margin-right: 5px;
-    margin-bottom: 5px;
-}
-
-.actress-tag:hover {
-    text-decoration: underline;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
