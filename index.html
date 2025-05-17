@@ -3,32 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Random Video</title>
+    <title>TikTok Random Video Viewer</title>
     <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --accent-color: #ff0050;
+            --card-bg: #f8f8f8;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --card-bg: #2d2d2d;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f0f0f0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
-            background-color: white;
+            background-color: var(--card-bg);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .video-container {
             position: relative;
-            padding-bottom: 177.77%; /* 9:16 aspect ratio */
-            height: 0;
+            padding-bottom: 177.77%;
+            border-radius: 10px;
             overflow: hidden;
             margin-bottom: 15px;
+            background: #000;
         }
 
-        .video-container video {
+        video {
             position: absolute;
             top: 0;
             left: 0;
@@ -37,60 +53,162 @@
             object-fit: cover;
         }
 
-        .info {
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
             margin-bottom: 15px;
         }
 
-        .title {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .region {
-            color: #666;
-            font-size: 14px;
-        }
-
         button {
-            background-color: #ff0050;
+            background-color: var(--accent-color);
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 25px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
+            transition: transform 0.2s, background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         button:hover {
             background-color: #e00048;
+            transform: scale(1.05);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            border-radius: 50%;
+        }
+
+        .video-info {
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .metadata {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.9em;
         }
 
         .loading {
             display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255,255,255,0.2);
             margin-top: 10px;
         }
+
+        .progress {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .settings {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+
+        .setting-item {
+            margin-bottom: 10px;
+        }
+
+        label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </head>
 <body>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i>
+    </button>
+
     <div class="container">
-        <h1>Random TikTok Video</h1>
+        <h1>🎵 Random TikTok Viewer</h1>
+        
         <div class="video-container">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
             <video id="tiktokVideo" controls>
                 <source id="videoSource" type="video/mp4">
             </video>
         </div>
-        <div class="info">
+
+        <div class="video-info">
             <div class="title" id="videoTitle"></div>
-            <div class="region" id="videoRegion"></div>
+            <div class="metadata">
+                <span id="videoRegion"></span>
+                <span id="videoDuration"></span>
+            </div>
         </div>
-        <button onclick="loadNewVideo()">Load New Video</button>
-        <div class="loading" id="loading">Loading...</div>
+
+        <div class="controls">
+            <button onclick="loadNewVideo()">
+                <i class="fas fa-sync"></i> New Video
+            </button>
+            <button onclick="downloadVideo()">
+                <i class="fas fa-download"></i> Download
+            </button>
+            <button onclick="shareVideo()">
+                <i class="fas fa-share"></i> Share
+            </button>
+        </div>
+
+        <div class="settings">
+            <div class="setting-item">
+                <label>
+                    <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()">
+                    Auto Refresh (every 30s)
+                </label>
+            </div>
+            <div class="setting-item">
+                <label>
+                    <input type="checkbox" id="loopVideo" onchange="toggleLoop()">
+                    Loop Video
+                </label>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+        </div>
     </div>
 
     <script>
+        let autoRefreshInterval;
+        const videoElement = document.getElementById('tiktokVideo');
+
         // Initial load
         window.onload = function() {
             loadVideoData();
+            setupVideoProgress();
+            setupKeyboardControls();
         };
 
         async function loadVideoData() {
@@ -99,28 +217,115 @@
                 const response = await fetch('https://apis-rho-nine.vercel.app/tikrandom');
                 const data = await response.json();
                 
-                document.getElementById('videoTitle').textContent = data.title;
-                document.getElementById('videoRegion').textContent = `Region: ${data.region}`;
+                updateVideoInfo(data);
+                updateVideoSource(data.playUrl);
                 
-                const videoPlayer = document.getElementById('tiktokVideo');
-                const videoSource = document.getElementById('videoSource');
-                videoSource.src = data.playUrl;
-                videoPlayer.load();
-                videoPlayer.play();
             } catch (error) {
-                console.error('Error loading video:', error);
-                alert('Error loading video. Please try again.');
+                showError('Failed to load video. Please try again.');
             } finally {
                 showLoading(false);
             }
         }
 
-        function loadNewVideo() {
-            loadVideoData();
+        function updateVideoInfo(data) {
+            document.getElementById('videoTitle').textContent = data.title;
+            document.getElementById('videoRegion').textContent = `Region: ${data.region}`;
+        }
+
+        function updateVideoSource(url) {
+            const videoSource = document.getElementById('videoSource');
+            videoSource.src = url;
+            videoElement.load();
+            
+            videoElement.addEventListener('loadedmetadata', () => {
+                document.getElementById('videoDuration').textContent = 
+                    `Duration: ${formatTime(videoElement.duration)}`;
+            });
+            
+            videoElement.play().catch(error => {
+                console.log('Autoplay blocked:', error);
+            });
+        }
+
+        function toggleTheme() {
+            document.body.dataset.theme = 
+                document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+        }
+
+        function toggleAutoRefresh() {
+            const autoRefresh = document.getElementById('autoRefresh');
+            if (autoRefresh.checked) {
+                autoRefreshInterval = setInterval(loadVideoData, 30000);
+            } else {
+                clearInterval(autoRefreshInterval);
+            }
+        }
+
+        function toggleLoop() {
+            videoElement.loop = document.getElementById('loopVideo').checked;
+        }
+
+        function downloadVideo() {
+            const link = document.createElement('a');
+            link.href = videoElement.querySelector('source').src;
+            link.download = `tiktok-${Date.now()}.mp4`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function shareVideo() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this TikTok!',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for desktop
+                const tempInput = document.createElement('input');
+                document.body.appendChild(tempInput);
+                tempInput.value = videoElement.querySelector('source').src;
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                alert('Video URL copied to clipboard!');
+            }
+        }
+
+        function setupVideoProgress() {
+            videoElement.addEventListener('timeupdate', () => {
+                const progress = (videoElement.currentTime / videoElement.duration) * 100;
+                document.getElementById('progress').style.width = `${progress}%`;
+            });
+        }
+
+        function setupKeyboardControls() {
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    videoElement.paused ? videoElement.play() : videoElement.pause();
+                }
+                if (e.code === 'ArrowRight') {
+                    loadNewVideo();
+                }
+            });
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            seconds = Math.floor(seconds % 60);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
         }
 
         function showLoading(show) {
             document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            alert(message);
+        }
+
+        function loadNewVideo() {
+            loadVideoData();
         }
     </script>
 </body>
