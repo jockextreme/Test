@@ -6,188 +6,34 @@
     <title>JAVHD Browser</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
-<body class="light-mode">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="#">JAVHD Browser</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" id="homeLink">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="categoriesLink">Categories</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="bookmarksLink">Bookmarks</a>
-                    </li>
-                </ul>
-                <div class="d-flex">
-                    <button id="themeToggle" class="btn btn-sm btn-outline-light me-2">
-                        <i class="bi bi-moon-fill"></i>
-                    </button>
-                    <div class="input-group">
-                        <input type="text" id="searchQuery" class="form-control form-control-sm" placeholder="Search...">
-                        <button id="searchBtn" class="btn btn-sm btn-light">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                </div>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">JAVHD Browser</h1>
+        
+        <div class="search-section mb-4">
+            <div class="input-group">
+                <input type="text" id="searchQuery" class="form-control" placeholder="Search videos...">
+                <button id="searchBtn" class="btn btn-primary">Search</button>
             </div>
         </div>
-    </nav>
-
-    <div class="container mt-4">
-        <!-- Search Section -->
-        <div id="searchSection" class="mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Advanced Search</h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <input type="text" id="searchQueryMain" class="form-control" placeholder="Title keywords">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" id="searchActress" class="form-control" placeholder="Actress name">
-                        </div>
-                        <div class="col-md-3">
-                            <select id="searchCategory" class="form-select">
-                                <option value="">All Categories</option>
-                                <!-- Categories will be populated by JS -->
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <button id="searchBtnMain" class="btn btn-primary w-100">Search</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content Sections -->
-        <div id="homeContent">
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">Popular Videos</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="popularVideos" class="row">
-                                <!-- Popular videos will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">Recent Videos</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="recentVideos" class="row">
-                                <!-- Recent videos will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Categories</h5>
-                </div>
-                <div class="card-body">
-                    <div id="categoriesList" class="d-flex flex-wrap gap-2">
-                        <!-- Categories will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Categories Content -->
-        <div id="categoriesContent" style="display: none;">
-            <div class="card">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Browse by Category</h5>
-                    <button id="backToHome" class="btn btn-sm btn-light">Back to Home</button>
-                </div>
-                <div class="card-body">
-                    <div id="categoryResults" class="row">
-                        <!-- Category results will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bookmarks Content -->
-        <div id="bookmarksContent" style="display: none;">
-            <div class="card">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Your Bookmarks</h5>
-                    <button id="backToHome2" class="btn btn-sm btn-light">Back to Home</button>
-                </div>
-                <div class="card-body">
-                    <div id="bookmarksList" class="row">
-                        <!-- Bookmarks will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Search Results -->
-        <div id="searchResults" style="display: none;">
-            <div class="card">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Search Results</h5>
-                    <button id="backToHome3" class="btn btn-sm btn-light">Back to Home</button>
-                </div>
-                <div class="card-body">
-                    <div id="resultsCount" class="mb-3"></div>
-                    <div id="resultsContainer" class="row"></div>
-                    <nav aria-label="Page navigation" class="mt-4">
-                        <ul id="pagination" class="pagination justify-content-center">
-                            <!-- Pagination will be generated here -->
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
-
-        <!-- Video Detail -->
-        <div id="videoDetail" style="display: none;">
-            <div class="card">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Video Details</h5>
-                    <button id="backToResults" class="btn btn-sm btn-light">Back to Results</button>
-                </div>
-                <div class="card-body">
-                    <div id="detailContent"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loading Indicator -->
-        <div id="loading" class="text-center my-5" style="display: none;">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+        
+        <div id="loading" class="text-center my-4" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <h4 class="mt-3">Loading...</h4>
+            <p>Loading results...</p>
+        </div>
+        
+        <div id="results" class="row"></div>
+        
+        <div id="videoDetail" class="mt-4" style="display: none;">
+            <button id="backBtn" class="btn btn-secondary mb-3">Back to Results</button>
+            <div id="detailContent"></div>
         </div>
     </div>
-
-    <footer class="bg-dark text-white py-3 mt-5">
-        <div class="container text-center">
-            <p class="mb-0">JAVHD Browser &copy; 2025 | API provided by zetsu.xyz</p>
-        </div>
-    </footer>
 
     <script src="script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-                          </html>
+</html>
