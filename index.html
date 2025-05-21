@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Research Hub</title>
+    <title>Academic Research Archive</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary: #e91e63;
-            --gradient-start: #1a1a1a;
-            --gradient-end: #2d2d2d;
+            --background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             --surface: rgba(255, 255, 255, 0.05);
             --text: #ffffff;
+            --glass: rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -22,7 +23,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            background: var(--background);
             color: var(--text);
             min-height: 100vh;
         }
@@ -36,7 +37,46 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid var(--glass);
+        }
+
+        /* Main Content Grid */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* Video Card */
+        .video-card {
+            background: var(--surface);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass);
+        }
+
+        .video-card:hover {
+            transform: translateY(-0.5rem);
+            box-shadow: var(--shadow);
+        }
+
+        /* Thumbnail Container */
+        .thumbnail-container {
+            position: relative;
+            aspect-ratio: 16/9;
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
         }
 
         /* Content Warning Modal */
@@ -48,7 +88,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.95);
-            z-index: 3000;
+            z-index: 2000;
         }
 
         .warning-content {
@@ -59,83 +99,47 @@
             max-width: 600px;
             padding: 2rem;
             text-align: center;
-        }
-
-        /* Video Grid */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2.5rem;
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Video Card Enhancements */
-        .video-card {
             background: var(--surface);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
+            border-radius: 1rem;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
         }
 
-        .video-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        /* Video Player */
+        .video-player-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* Loading Skeletons */
+        /* Utility Classes */
+        .loader {
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
         .skeleton {
             background: var(--surface);
-            border-radius: 20px;
+            border-radius: 1rem;
             aspect-ratio: 16/9;
             animation: pulse 1.5s infinite;
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.6; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 
+            0%, 100% { opacity: 0.6; }
             50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
-
-        /* Network Status */
-        .network-status {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
-            display: none;
-        }
-
-        /* Back to Top Button */
-        .back-to-top {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px;
-            border-radius: 50%;
-            background: var(--primary);
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        /* Enhanced Video Player */
-        .custom-player-controls {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.7));
-            padding: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
     </style>
 </head>
@@ -143,21 +147,31 @@
     <!-- Content Warning Modal -->
     <div class="warning-modal" id="warningModal">
         <div class="warning-content">
-            <h2>Content Advisory</h2>
-            <p>This material is preserved strictly for academic research and educational purposes. Viewer discretion advised.</p>
+            <h2>Academic Content Advisory</h2>
+            <p>This material is preserved for educational research purposes only. By proceeding, you confirm:</p>
+            <ul style="text-align: left; margin: 1rem 0;">
+                <li>You are 18+ years old</li>
+                <li>Accessing for academic purposes</li>
+                <li>Will not redistribute content</li>
+            </ul>
             <div style="margin-top: 2rem;">
-                <button onclick="confirmAge()" class="confirm-btn">I confirm I'm 18+</button>
-                <button onclick="closeWarning()" class="cancel-btn">Exit</button>
+                <button onclick="confirmAccess()" style="background: var(--primary); padding: 0.8rem 2rem; border: none; border-radius: 0.5rem; margin-right: 1rem; cursor: pointer;">
+                    I Understand
+                </button>
+                <button onclick="closeWarning()" style="background: transparent; border: 1px solid var(--text); padding: 0.8rem 2rem; border-radius: 0.5rem; cursor: pointer;">
+                    Exit
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main Header -->
     <header class="header">
-        <h1>Academic Research Hub</h1>
-        <p>Preserving Knowledge for Scholarly Analysis</p>
+        <h1>Academic Research Archive</h1>
+        <p style="margin-top: 1rem; opacity: 0.8;">Preserving Cultural Artifacts for Scholarly Study</p>
     </header>
 
+    <!-- Video Grid -->
     <div class="grid-container" id="videoGrid">
         <!-- Skeleton Loading -->
         <div class="skeleton"></div>
@@ -165,134 +179,126 @@
         <div class="skeleton"></div>
     </div>
 
-    <!-- Network Status -->
-    <div class="network-status" id="networkStatus">
-        <i class="fas fa-wifi"></i> Network Status
-    </div>
-
-    <!-- Back to Top -->
-    <div class="back-to-top" id="backToTop">
-        <i class="fas fa-arrow-up"></i>
-    </div>
+    <!-- Loading Indicator -->
+    <div class="loader" id="mainLoader" style="display: none;"></div>
 
     <script>
-        let currentVideoUrl = '';
-        let allVideos = [];
-        let page = 1;
+        let currentPage = 1;
+        let isLoading = false;
+        const API_URL = 'https://kaiz-apis.gleeze.com/api/lootedpinay';
 
-        // Fetch Videos with Error Handling
-        async function fetchVideos() {
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMoreVideos();
+            setupInfiniteScroll();
+        });
+
+        // Data Fetching
+        async function loadMoreVideos() {
+            if(isLoading) return;
+            
+            isLoading = true;
+            document.getElementById('mainLoader').style.display = 'block';
+
             try {
-                showLoader();
-                const response = await fetch(`https://kaiz-apis.gleeze.com/api/lootedpinay?limit=10&page=${page}&apikey=0acad241-6a34-4516-bcc6-310a137e6357`);
-                
-                if (!response.ok) throw new Error('Network response was not ok');
-                
+                const response = await fetch(`${API_URL}?limit=10&page=${currentPage}&apikey=0acad241-6a34-4516-bcc6-310a137e6357`);
                 const data = await response.json();
-                allVideos = [...allVideos, ...data.videos];
-                renderVideos();
-                page++;
-            } catch (error) {
-                showError('Failed to load research materials. Please try again later.');
+                
+                renderVideos(data.videos);
+                currentPage++;
+            } catch(error) {
+                console.error('Research data fetch error:', error);
             } finally {
-                hideLoader();
+                isLoading = false;
+                document.getElementById('mainLoader').style.display = 'none';
             }
         }
 
-        // Render Videos with Animation
-        function renderVideos() {
+        // Video Rendering
+        function renderVideos(videos) {
             const grid = document.getElementById('videoGrid');
             grid.querySelectorAll('.skeleton').forEach(el => el.remove());
-            
-            allVideos.forEach(video => {
+
+            videos.forEach(video => {
                 const card = document.createElement('div');
                 card.className = 'video-card';
                 card.innerHTML = `
                     <div class="thumbnail-container" onclick="showContentWarning('${video.mp4url}')">
-                        <img src="${video.thumbnail}" class="thumbnail" alt="${video.title}">
-                        <div class="hover-overlay">
-                            <i class="fas fa-play play-button"></i>
-                            <div class="video-stats">
-                                <span><i class="fas fa-clock"></i> ${video.duration || 'N/A'}</span>
-                            </div>
+                        <img src="${video.thumbnail}" class="thumbnail" alt="${video.title}" loading="lazy">
+                        <div style="position: absolute; bottom: 1rem; left: 1rem; background: rgba(0,0,0,0.7); padding: 0.5rem 1rem; border-radius: 0.5rem;">
+                            ${video.duration || '00:00'}
                         </div>
                     </div>
-                    <div class="video-info">
-                        <h3 class="video-title">${video.title}</h3>
-                        <div class="video-actions">
-                            <button class="action-btn" onclick="toggleBookmark(event, '${video.id}')">
-                                <i class="fas fa-bookmark"></i>
+                    <div style="padding: 1.5rem;">
+                        <h3 style="margin-bottom: 1rem;">${video.title}</h3>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button onclick="analyzeContent('${video.id}')" style="background: var(--primary); border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
+                                <i class="fas fa-microscope"></i> Analyze
                             </button>
-                            <button class="action-btn" onclick="shareVideo('${video.mp4url}')">
-                                <i class="fas fa-share"></i>
+                            <button onclick="shareResearch('${video.id}')" style="background: var(--glass); border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
+                                <i class="fas fa-share"></i> Share
                             </button>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
-                setTimeout(() => card.classList.add('visible'), 100);
             });
         }
 
         // Content Warning System
+        let currentVideoUrl = '';
         function showContentWarning(url) {
             currentVideoUrl = url;
             document.getElementById('warningModal').style.display = 'block';
         }
 
-        function confirmAge() {
+        function confirmAccess() {
             closeWarning();
-            playVideo(currentVideoUrl);
-        }
-
-        // Enhanced Video Player
-        function playVideo(url) {
             const player = document.createElement('div');
             player.className = 'video-player-overlay';
             player.innerHTML = `
-                <video controls autoplay>
-                    <source src="${url}" type="video/mp4">
+                <video controls style="width: 80%; max-width: 1000px; border-radius: 1rem; overflow: hidden;">
+                    <source src="${currentVideoUrl}" type="video/mp4">
                 </video>
-                <div class="custom-player-controls">
-                    <button onclick="adjustPlaybackSpeed(0.5)">0.5x</button>
-                    <button onclick="adjustPlaybackSpeed(1)">1x</button>
-                    <button onclick="adjustPlaybackSpeed(1.5)">1.5x</button>
-                    <button onclick="toggleFullScreen()"><i class="fas fa-expand"></i></button>
-                </div>
+                <button onclick="this.parentElement.remove()" style="position: absolute; top: 2rem; right: 2rem; background: transparent; border: none; font-size: 2rem; cursor: pointer;">
+                    &times;
+                </button>
             `;
             document.body.appendChild(player);
         }
 
-        // Network Detection
-        window.addEventListener('online', updateNetworkStatus);
-        window.addEventListener('offline', updateNetworkStatus);
-
-        function updateNetworkStatus() {
-            const status = document.getElementById('networkStatus');
-            status.style.display = 'block';
-            status.textContent = navigator.onLine 
-                ? '<i class="fas fa-wifi"></i> Online' 
-                : '<i class="fas fa-unlink"></i> Offline';
-            setTimeout(() => status.style.display = 'none', 3000);
+        function closeWarning() {
+            document.getElementById('warningModal').style.display = 'none';
         }
 
-        // Back to Top
-        window.addEventListener('scroll', () => {
-            const btn = document.getElementById('backToTop');
-            btn.style.opacity = window.scrollY > 500 ? '1' : '0';
-        });
+        // Infinite Scroll
+        function setupInfiniteScroll() {
+            window.addEventListener('scroll', () => {
+                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+                if (scrollTop + clientHeight >= scrollHeight - 500 && !isLoading) {
+                    loadMoreVideos();
+                }
+            });
+        }
 
-        document.getElementById('backToTop').addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        // Research Tools
+        function analyzeContent(videoId) {
+            alert(`Initiating analysis protocol for video ${videoId}...`);
+            // Implement analysis features
+        }
 
-        // Initial Load
-        fetchVideos();
-        window.addEventListener('scroll', () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
-                fetchVideos();
+        function shareResearch(videoId) {
+            const video = allVideos.find(v => v.id === videoId);
+            if(navigator.share) {
+                navigator.share({
+                    title: 'Academic Research Material',
+                    text: 'Review this cultural artifact for study:',
+                    url: video.mp4url
+                });
+            } else {
+                prompt('Copy research link:', video.mp4url);
             }
-        });
+        }
     </script>
 </body>
 </html>
