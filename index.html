@@ -81,7 +81,7 @@
       margin-top: 10px;
       font-weight: bold;
     }
-    #premiumModal, #adminModal {
+    #premiumModal {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.6);
@@ -90,7 +90,7 @@
       align-items: center;
       z-index: 999;
     }
-    .modal-content {
+    #premiumModal .modal-content {
       background: var(--card);
       padding: 25px;
       border-radius: 10px;
@@ -98,7 +98,7 @@
       width: 300px;
       color: var(--text);
     }
-    input {
+    #premiumModal input {
       width: 100%;
       padding: 10px;
       margin-bottom: 10px;
@@ -128,7 +128,6 @@
       <button class="delete-btn" onclick="clearChat()">Clear</button>
       <button class="premium-btn" onclick="openPremiumModal()">Unlock Premium</button>
       <button class="dark-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
-      <button class="premium-btn" onclick="openAdminModal()">Admin Panel</button>
     </div>
     <div id="responseOutput" class="response-box"></div>
     <div id="statusText" class="status"></div>
@@ -138,25 +137,14 @@
   <div id="premiumModal">
     <div class="modal-content">
       <h2>Enter Premium Code</h2>
-      <input id="premiumCode" type="text" placeholder="Enter code" />
+      <input id="premiumCode" type="text" placeholder="e.g. kaizen-elite-2025" />
       <button onclick="verifyPremiumCode()" class="premium-btn">Activate</button>
       <p id="premiumMsg" style="color:red;display:none;"></p>
     </div>
   </div>
 
-  <!-- Admin Panel Modal -->
-  <div id="adminModal">
-    <div class="modal-content">
-      <h2>Generate Premium Code</h2>
-      <input type="password" id="adminPass" placeholder="Admin Password"/>
-      <button onclick="generateCode()" class="send-btn">Generate</button>
-      <p id="genCode" style="margin-top:10px; word-break: break-all;"></p>
-    </div>
-  </div>
-
 <script>
 let isPremium = false;
-let currentCode = "kaizen-elite-2025";
 
 function onLoad() {
   isPremium = localStorage.getItem("kaizenji_premium") === "true";
@@ -221,11 +209,11 @@ function verifyPremiumCode() {
   const code = document.getElementById("premiumCode").value.trim();
   const msg = document.getElementById("premiumMsg");
 
-  if (code === currentCode) {
-    localStorage.setItem("kaizenji_premium", "true");
+  if (code === "kaizen-elite-2025") {
+    localStorage.setItem("cen", "true");
     isPremium = true;
     updateStatus();
-    alert("Premium activated!");
+    alert("Premium activated! Enjoy unlimited messages.");
     document.getElementById("premiumModal").style.display = "none";
   } else {
     msg.textContent = "Invalid code. Please try again.";
@@ -242,23 +230,6 @@ function updateStatus() {
 function toggleDarkMode() {
   document.body.classList.toggle("dark");
   localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-}
-
-function openAdminModal() {
-  document.getElementById("adminModal").style.display = "flex";
-}
-
-function generateCode() {
-  const adminPass = document.getElementById("adminPass").value.trim();
-  const display = document.getElementById("genCode");
-
-  if (adminPass === "admin123") {
-    const newCode = "kaizen-" + Math.random().toString(36).substring(2, 12);
-    currentCode = newCode;
-    display.innerText = "New Code: " + newCode;
-  } else {
-    display.innerText = "Invalid Admin Password.";
-  }
 }
 </script>
 
