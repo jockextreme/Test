@@ -6,23 +6,23 @@
   <title>Kaizenji AI Assistant</title>
   <style>
     :root {
-      --bg: #f0f4f8;
+      --bg: #f9fafc;
       --fg: #ffffff;
-      --text: #333;
-      --accent: #4f46e5;
-      --danger: #dc2626;
-    }
-
-    body.dark {
-      --bg: #121212;
-      --fg: #1e1e1e;
-      --text: #f0f0f0;
+      --text: #2d2d2d;
       --accent: #6366f1;
       --danger: #ef4444;
+      --soft: #e0e7ff;
+    }
+    body.dark {
+      --bg: #0d1117;
+      --fg: #161b22;
+      --text: #e6edf3;
+      --accent: #8b5cf6;
+      --danger: #f87171;
+      --soft: #1f2937;
     }
 
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       background: var(--bg);
@@ -33,84 +33,65 @@
       align-items: center;
       min-height: 100vh;
       padding: 20px;
-      transition: background 0.3s, color 0.3s;
+      transition: 0.3s ease;
     }
-
     .container {
       background: var(--fg);
       padding: 30px;
       border-radius: 20px;
       width: 100%;
-      max-width: 600px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 650px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      transition: 0.3s ease;
     }
-
     h1 {
       text-align: center;
-      font-size: 28px;
+      font-size: 30px;
       margin-bottom: 10px;
     }
-
     .controls {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
     }
-
+    .controls button {
+      margin: 5px 0;
+    }
     .chat-box {
-      background: rgba(255,255,255,0.7);
-      border-radius: 12px;
-      padding: 15px;
-      height: 300px;
+      background: var(--soft);
+      border-radius: 15px;
+      padding: 20px;
+      height: 340px;
       overflow-y: auto;
       margin: 20px 0;
       box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
     }
-
-    body.dark .chat-box {
-      background: rgba(30,30,30,0.7);
-    }
-
     .message {
-      margin-bottom: 10px;
-      background: #f1f3f5;
+      margin-bottom: 12px;
       border-radius: 12px;
-      padding: 10px;
+      padding: 12px;
+      background: var(--fg);
       position: relative;
       animation: fadeIn 0.3s ease-in-out;
     }
-
-    body.dark .message {
-      background: #2e2e2e;
-    }
-
     .message span {
-      font-weight: bold;
+      font-weight: 600;
     }
-
     .timestamp {
-      font-size: 12px;
+      font-size: 11px;
       color: gray;
       float: right;
-      margin-left: 10px;
     }
-
     .delete-btn {
       position: absolute;
-      top: 8px;
+      top: 10px;
       right: 10px;
       background: none;
       border: none;
       color: gray;
       cursor: pointer;
     }
-
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(10px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-
     input, button {
       width: 100%;
       padding: 12px;
@@ -119,116 +100,111 @@
       border: none;
       font-size: 16px;
     }
-
-    input {
-      background: #f9f9f9;
-    }
-
-    body.dark input {
-      background: #252525;
-      color: white;
-    }
-
     button {
       background: var(--accent);
       color: white;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.3s;
     }
-
-    button:hover {
-      background: #3730a3;
-    }
-
-    .clear-btn {
-      background: var(--danger);
-      margin-top: 10px;
-    }
-
-    .theme-toggle {
-      background: #888;
-      font-size: 14px;
+    .clear-btn { background: var(--danger); }
+    .theme-toggle, .export-btn, .scroll-btn {
+      width: auto;
+      padding: 10px 14px;
       margin-left: 10px;
+      font-size: 14px;
+      background: #888;
     }
-
     .limit-warning {
       color: red;
       font-size: 12px;
       display: none;
       margin-top: 5px;
     }
-
+    .premium-banner {
+      background: var(--accent);
+      color: white;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
     footer {
       text-align: center;
       margin-top: 20px;
       font-size: 14px;
-      color: #888;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Kaizenji AI Assistant</h1>
-    <div class="controls">
-      <p>Talk to the AI!</p>
-      <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+    <div class="premium-banner" id="premiumBanner">
+      Premium Mode: <span id="premiumStatus">Off</span> |
+      <a href="https://facebook.com/official.bulawanbcenhabil" target="_blank" style="color: white; text-decoration: underline;">Contact to Upgrade</a>
     </div>
-
+    <div class="controls">
+      <div>
+        <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+        <button class="scroll-btn" onclick="toggleAutoScroll()">Auto-Scroll: <span id="scrollStatus">On</span></button>
+        <button class="export-btn" onclick="exportChat()">Export Chat</button>
+      </div>
+    </div>
     <div class="chat-box" id="chatBox"></div>
-
-    <input type="text" id="userInput" placeholder="Ask something..." maxlength="200"/>
-    <div class="limit-warning" id="charLimit">Max 200 characters.</div>
+    <input type="text" id="userInput" placeholder="Ask something..." />
+    <div class="limit-warning" id="charLimit">Max 200 characters. Become premium to unlock more!</div>
     <button onclick="askAI()">Ask</button>
-    <button class="clear-btn" onclick="clearChat()">Clear All</button>
-
-    <footer>Powered by DeepSeek API | Kaizenji © 2025</footer>
+    <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
+    <footer>Kaizenji © 2025 | Powered by DeepSeek API</footer>
   </div>
 
   <script>
     const chatBox = document.getElementById('chatBox');
     const input = document.getElementById('userInput');
     const limitWarn = document.getElementById('charLimit');
+    const scrollStatus = document.getElementById('scrollStatus');
+    const premiumStatus = document.getElementById('premiumStatus');
     const storageKey = "kaizenji_chat_history";
+    let autoScroll = true;
+    let isPremium = JSON.parse(localStorage.getItem("kaizenji_premium") || "false");
 
-    if (localStorage.getItem("darkMode") === "true") {
-      document.body.classList.add("dark");
-    }
+    if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
+    if (localStorage.getItem("autoScroll") === "false") autoScroll = false;
+
+    updatePremiumUI();
 
     function loadChat() {
       const history = JSON.parse(localStorage.getItem(storageKey)) || [];
       chatBox.innerHTML = '';
-      history.forEach((msg, index) => {
-        appendMessage(msg.author, msg.text, msg.time, index);
-      });
-      chatBox.scrollTop = chatBox.scrollHeight;
+      history.forEach((msg, index) => appendMessage(msg.author, msg.text, msg.time, index));
+      if (autoScroll) chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     function appendMessage(author, text, time, index) {
       const msg = document.createElement('div');
       msg.className = 'message';
-      msg.innerHTML = `<span>${author}</span>: ${text} 
-        <span class="timestamp">${time}</span>
+      msg.innerHTML = `<span>${author}</span>: ${text} <span class="timestamp">${time}</span>
         <button class="delete-btn" onclick="deleteMessage(${index})">✕</button>`;
       chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
+      if (autoScroll) chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     async function askAI() {
       const question = input.value.trim();
       if (!question) return;
-
+      if (!isPremium && question.length > 200) {
+        limitWarn.style.display = 'block';
+        return;
+      }
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
       appendMessage("You", question, time);
       saveToLocal("You", question, time);
       input.value = '';
       limitWarn.style.display = 'none';
 
-      const botTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const loading = document.createElement('div');
       loading.className = 'message';
-      loading.innerHTML = `<span>Kaizenji</span>: <em id="typing">Typing</em> <span class="timestamp">${botTime}</span>`;
+      loading.innerHTML = `<span>Kaizenji</span>: <em id="typing">Typing</em> <span class="timestamp">${time}</span>`;
       chatBox.appendChild(loading);
 
       let dots = 0;
@@ -240,17 +216,15 @@
       try {
         const res = await fetch(`https://kaiz-apis.gleeze.com/api/deepseek-v3?ask=${encodeURIComponent(question)}&apikey=0acad241-6a34-4516-bcc6-310a137e6357`);
         const data = await res.json();
-
         clearInterval(typing);
         loading.remove();
-        const response = data?.response || "Sorry, I couldn't respond.";
-        appendMessage(data.author || "Kaizenji", response, botTime);
-        saveToLocal(data.author || "Kaizenji", response, botTime);
+        appendMessage(data.author || "Kaizenji", data.response || "No response.", time);
+        saveToLocal(data.author || "Kaizenji", data.response || "No response.", time);
       } catch (err) {
         clearInterval(typing);
         loading.remove();
-        appendMessage("Kaizenji", "Network error. Try again later.", botTime);
-        saveToLocal("Kaizenji", "Network error. Try again later.", botTime);
+        appendMessage("Kaizenji", "Network error. Try again later.", time);
+        saveToLocal("Kaizenji", "Network error. Try again later.", time);
       }
     }
 
@@ -281,8 +255,31 @@
       localStorage.setItem("darkMode", document.body.classList.contains("dark"));
     }
 
+    function toggleAutoScroll() {
+      autoScroll = !autoScroll;
+      scrollStatus.textContent = autoScroll ? "On" : "Off";
+      localStorage.setItem("autoScroll", autoScroll);
+    }
+
+    function exportChat() {
+      const history = JSON.parse(localStorage.getItem(storageKey)) || [];
+      const text = history.map(m => `[${m.time}] ${m.author}: ${m.text}`).join("\n");
+      const blob = new Blob([text], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "kaizenji_chat_export.txt";
+      a.click();
+    }
+
+    function updatePremiumUI() {
+      premiumStatus.textContent = isPremium ? "On" : "Off";
+      input.maxLength = isPremium ? '' : 200;
+    }
+
     input.addEventListener('input', () => {
-      limitWarn.style.display = input.value.length >= 200 ? 'block' : 'none';
+      if (!isPremium) {
+        limitWarn.style.display = input.value.length > 200 ? 'block' : 'none';
+      }
     });
 
     loadChat();
