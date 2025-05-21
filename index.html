@@ -2,121 +2,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kaizenji AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kaizenji AI - Pro Chat</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      background: #f5f7fa;
-      color: #333;
+      font-family: "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.4s, color 0.4s;
+    }
+    :root {
+      --bg: #eef2f3;
+      --text: #2c3e50;
+      --card: #ffffff;
+      --shadow: rgba(0,0,0,0.1);
+    }
+    .dark {
+      --bg: #121212;
+      --text: #ecf0f1;
+      --card: #1e1e1e;
+      --shadow: rgba(255,255,255,0.1);
     }
     .container {
       max-width: 800px;
-      margin: 50px auto;
-      padding: 20px;
-      background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-radius: 10px;
+      margin: 60px auto;
+      padding: 30px;
+      background: var(--card);
+      border-radius: 15px;
+      box-shadow: 0 10px 25px var(--shadow);
     }
-    .header {
+    h1 {
       text-align: center;
       margin-bottom: 20px;
-    }
-    .header h1 {
-      font-size: 2em;
-      color: #2c3e50;
+      font-size: 2.2em;
     }
     textarea {
       width: 100%;
       height: 100px;
-      margin-bottom: 10px;
-      padding: 10px;
+      border-radius: 10px;
+      padding: 15px;
       border: 1px solid #ccc;
-      border-radius: 6px;
       resize: vertical;
+      font-size: 1em;
+    }
+    .buttons {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
     }
     button {
-      padding: 10px 20px;
+      padding: 12px 25px;
       border: none;
-      background-color: #2c3e50;
-      color: white;
+      border-radius: 8px;
       cursor: pointer;
-      border-radius: 6px;
-      margin-right: 10px;
+      font-weight: bold;
+      transition: background 0.3s ease;
     }
-    button:hover {
-      background-color: #1a252f;
-    }
+    .send-btn { background: #2c3e50; color: white; }
+    .send-btn:hover { background: #1a252f; }
+    .delete-btn { background: crimson; color: white; }
+    .delete-btn:hover { background: darkred; }
+    .premium-btn { background: #27ae60; color: white; }
+    .dark-toggle { background: #34495e; color: white; }
     .response-box {
-      margin-top: 20px;
+      margin-top: 25px;
       padding: 15px;
-      background: #ecf0f1;
-      border-radius: 6px;
+      background: var(--bg);
+      border-radius: 10px;
+      min-height: 60px;
     }
-    .premium-info {
-      margin-top: 15px;
-      font-size: 0.9em;
-      color: green;
+    .status {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
     }
-    .delete-btn {
-      background-color: crimson;
+    #premiumModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
     }
-    .delete-btn:hover {
-      background-color: darkred;
+    #premiumModal .modal-content {
+      background: var(--card);
+      padding: 25px;
+      border-radius: 10px;
+      text-align: center;
+      width: 300px;
+      color: var(--text);
+    }
+    #premiumModal input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .typing {
+      font-style: italic;
+      color: gray;
+    }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      vertical-align: middle;
+      margin-right: 10px;
     }
   </style>
 </head>
-<body>
+<body onload="onLoad()">
 
-<div class="container">
-  <div class="header">
+  <div class="container">
     <h1>Kaizenji AI Chat</h1>
+    <textarea id="userInput" placeholder="Type your message..."></textarea>
+    <div class="buttons">
+      <button class="send-btn" onclick="sendMessage()">Send</button>
+      <button class="delete-btn" onclick="clearChat()">Clear</button>
+      <button class="premium-btn" onclick="openPremiumModal()">Unlock Premium</button>
+      <button class="dark-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    </div>
+    <div id="responseOutput" class="response-box"></div>
+    <div id="statusText" class="status"></div>
   </div>
-  <textarea id="userInput" placeholder="Ask something..."></textarea>
-  <div>
-    <button onclick="sendMessage()">Send</button>
-    <button class="delete-btn" onclick="clearChat()">Clear Conversation</button>
-  </div>
-  <div class="response-box" id="responseOutput"></div>
-  <div class="premium-info" id="premiumStatus"></div>
-  <div class="text-center mt-4">
-    <button onclick="document.getElementById('premiumModal').classList.remove('hidden')" class="text-blue-600 underline text-sm hover:text-blue-800">Have a premium code?</button>
-  </div>
-</div>
 
-<!-- Premium Modal -->
-<div id="premiumModal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
-  <div style="background: white; padding: 20px; border-radius: 10px; width: 300px; text-align: center;">
-    <h2 style="margin-bottom: 15px;">Unlock Premium</h2>
-    <input id="premiumCode" type="text" placeholder="Enter your code" style="width: 100%; padding: 10px; margin-bottom: 10px;" />
-    <button onclick="verifyPremiumCode()" style="padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 6px;">Activate</button>
-    <p id="premiumMsg" style="color: red; margin-top: 10px; display: none;"></p>
+  <!-- Premium Modal -->
+  <div id="premiumModal">
+    <div class="modal-content">
+      <h2>Enter Premium Code</h2>
+      <input id="premiumCode" type="text" placeholder="e.g. kaizen-elite-2025" />
+      <button onclick="verifyPremiumCode()" class="premium-btn">Activate</button>
+      <p id="premiumMsg" style="color:red;display:none;"></p>
+    </div>
   </div>
-</div>
 
 <script>
-const isPremium = localStorage.getItem("kaizenji_premium") === "true";
-document.getElementById("premiumStatus").innerText = isPremium ? "Premium Mode: ON (Unlimited characters)" : "Free Mode: Limited to 100 characters";
+let isPremium = false;
+
+function onLoad() {
+  isPremium = localStorage.getItem("kaizenji_premium") === "true";
+  updateStatus();
+  loadChat();
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+  }
+}
 
 function sendMessage() {
   const input = document.getElementById("userInput");
-  let message = input.value.trim();
+  const message = input.value.trim();
   if (!message) return;
 
   if (!isPremium && message.length > 100) {
-    alert("Character limit reached. Activate premium to remove the limit.");
+    alert("Free users are limited to 100 characters. Upgrade to premium for unlimited use.");
     return;
   }
+
+  const output = document.getElementById("responseOutput");
+  output.innerHTML = `<div class="typing">Kaizenji is typing...</div>`;
 
   fetch(`https://kaiz-apis.gleeze.com/api/deepseek-v3?ask=${encodeURIComponent(message)}&apikey=0acad241-6a34-4516-bcc6-310a137e6357`)
     .then(res => res.json())
     .then(data => {
-      document.getElementById("responseOutput").innerHTML = "<strong>" + data.author + ":</strong> " + data.response;
+      const reply = `
+        <p><img class="avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Kaizenji" />
+        <strong>${data.author}:</strong> ${data.response}</p>`;
+      output.innerHTML = reply;
       saveChat(message, data.response);
     });
+
+  input.value = "";
 }
 
 function saveChat(userMsg, botReply) {
@@ -127,7 +189,10 @@ function saveChat(userMsg, botReply) {
 function loadChat() {
   const chat = JSON.parse(localStorage.getItem("kaizenji_chat"));
   if (chat) {
-    document.getElementById("responseOutput").innerHTML = "<strong>You:</strong> " + chat.user + "<br><strong>Kaizenji:</strong> " + chat.bot;
+    const reply = `<p><strong>You:</strong> ${chat.user}<br>
+    <img class="avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Kaizenji" />
+    <strong>Kaizenji:</strong> ${chat.bot}</p>`;
+    document.getElementById("responseOutput").innerHTML = reply;
   }
 }
 
@@ -136,21 +201,36 @@ function clearChat() {
   document.getElementById("responseOutput").innerHTML = "";
 }
 
+function openPremiumModal() {
+  document.getElementById("premiumModal").style.display = "flex";
+}
+
 function verifyPremiumCode() {
   const code = document.getElementById("premiumCode").value.trim();
   const msg = document.getElementById("premiumMsg");
 
-  if (code === "cenn2025") {
+  if (code === "kaizen-elite-2025") {
     localStorage.setItem("kaizenji_premium", "true");
-    alert("Premium activated! Please refresh the page.");
-    document.getElementById("premiumModal").classList.add("hidden");
+    isPremium = true;
+    updateStatus();
+    alert("Premium activated! Enjoy unlimited messages.");
+    document.getElementById("premiumModal").style.display = "none";
   } else {
     msg.textContent = "Invalid code. Please try again.";
     msg.style.display = "block";
   }
 }
 
-loadChat();
+function updateStatus() {
+  document.getElementById("statusText").innerText = isPremium
+    ? "Status: Premium (Unlimited Characters)"
+    : "Status: Free (100 Character Limit)";
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+}
 </script>
 
 </body>
