@@ -209,8 +209,8 @@ function verifyPremiumCode() {
   const code = document.getElementById("premiumCode").value.trim();
   const msg = document.getElementById("premiumMsg");
 
-  if (code === "kaizen-elite-2025") {
-    localStorage.setItem("cen", "true");
+  if (code === "cen") {
+    localStorage.setItem("kaizenji_premium", "true");
     isPremium = true;
     updateStatus();
     alert("Premium activated! Enjoy unlimited messages.");
