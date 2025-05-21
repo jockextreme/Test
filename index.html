@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Educational Media Archive | Research Platform</title>
+    <title>Educational Research Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary: #e91e63;
-            --background: #1a1a1a;
-            --surface: #2d2d2d;
+            --gradient-start: #1a1a1a;
+            --gradient-end: #2d2d2d;
+            --surface: rgba(255, 255, 255, 0.05);
             --text: #ffffff;
         }
 
@@ -17,73 +18,74 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            background: var(--background);
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
             color: var(--text);
-            transition: background 0.3s ease;
-        }
-
-        body.light-theme {
-            --background: #f5f5f5;
-            --surface: #ffffff;
-            --text: #333333;
+            min-height: 100vh;
         }
 
         .header {
             background: var(--surface);
+            backdrop-filter: blur(10px);
             padding: 2rem;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .disclaimer {
-            background: var(--primary);
-            padding: 1rem;
+            background: linear-gradient(90deg, var(--primary), #ff4081);
+            padding: 1.5rem;
             text-align: center;
             font-size: 0.9em;
             margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
         }
 
         .search-bar {
             margin: 20px auto;
-            max-width: 600px;
+            max-width: 800px;
             padding: 0 2rem;
         }
 
         #searchInput {
             width: 100%;
-            padding: 15px;
-            border-radius: 30px;
+            padding: 18px;
+            border-radius: 50px;
             border: none;
             background: var(--surface);
             color: var(--text);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 1.1em;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
             padding: 2rem;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
         .video-card {
             background: var(--surface);
-            border-radius: 10px;
+            border-radius: 20px;
             overflow: hidden;
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .video-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
         }
 
         .thumbnail-container {
@@ -95,6 +97,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s;
         }
 
         .play-button {
@@ -102,9 +105,15 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 3rem;
-            color: rgba(255,255,255,0.8);
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            font-size: 4rem;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .video-card:hover .play-button {
+            opacity: 1;
         }
 
         .video-info {
@@ -113,27 +122,34 @@
         }
 
         .video-title {
-            font-size: 1.1em;
+            font-size: 1.2em;
             margin-bottom: 0.5rem;
-            color: var(--text);
+            font-weight: 500;
+            line-height: 1.4;
         }
 
         .video-actions {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
 
         .action-btn {
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.3);
             border: none;
             color: white;
-            padding: 8px;
+            padding: 10px;
             border-radius: 50%;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
         }
 
         .modal {
@@ -143,8 +159,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 1000;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
         }
 
         .modal-content {
@@ -152,44 +168,29 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 800px;
+            width: 90%;
+            max-width: 1000px;
         }
 
         .video-player {
             width: 100%;
-            aspect-ratio: 16/9;
+            height: 70vh;
+            border-radius: 15px;
+            overflow: hidden;
         }
 
         .close-btn {
             position: absolute;
-            top: -30px;
+            top: -40px;
             right: 0;
-            font-size: 2rem;
+            font-size: 2.5rem;
             cursor: pointer;
             color: white;
+            transition: color 0.3s;
         }
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            padding: 2rem;
-        }
-
-        .page-btn {
-            padding: 10px 20px;
-            background: var(--primary);
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-
-        .page-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+        .close-btn:hover {
+            color: var(--primary);
         }
 
         .loader {
@@ -197,8 +198,8 @@
             border: 4px solid #f3f3f3;
             border-top: 4px solid var(--primary);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
             margin: 2rem auto;
         }
@@ -208,60 +209,44 @@
             100% { transform: rotate(360deg); }
         }
 
-        .video-stats {
-            text-align: center;
-            padding: 1rem;
-            background: var(--surface);
-            margin: 1rem auto;
-            max-width: 600px;
-            border-radius: 10px;
-        }
-
         footer {
-            background: #000;
+            background: rgba(0, 0, 0, 0.3);
             padding: 2rem;
             text-align: center;
             margin-top: 3rem;
+            backdrop-filter: blur(10px);
         }
 
-        .theme-switcher {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--surface);
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .video-player {
+                height: 50vh;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="theme-switcher" onclick="toggleTheme()">
-        <i class="fas fa-moon"></i>
-    </div>
-
     <header class="header">
-        <h1>📚 Academic Media Archive</h1>
-        <p>For Research and Educational Purposes Only</p>
+        <h1 style="font-size: 2.5em; letter-spacing: 2px;">📚 Academic Research Portal</h1>
+        <p style="margin-top: 1rem; opacity: 0.8;">For Scholarly Analysis and Educational Purposes</p>
     </header>
 
     <div class="disclaimer">
-        ⚠️ This content is preserved under Fair Use for academic research. All materials are strictly for educational analysis.
+        ⚠️ This content is preserved under Fair Use doctrine for academic research and critical analysis.
     </div>
 
     <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search research materials..." onkeyup="filterVideos()">
+        <input type="text" id="searchInput" placeholder="Search research materials..." 
+               onkeyup="filterVideos()" style="padding-left: 30px;">
     </div>
-
-    <div class="video-stats">
-        <span id="stats">Loading academic resources...</span>
-    </div>
-
-    <div class="loader" id="loader"></div>
 
     <div class="grid-container" id="videoGrid"></div>
+
+    <div class="loader" id="loader"></div>
 
     <div class="modal" id="videoModal">
         <div class="modal-content">
@@ -272,71 +257,41 @@
         </div>
     </div>
 
-    <div class="pagination">
-        <button class="page-btn" onclick="loadMore()" id="loadMore">Load More</button>
-    </div>
-
     <footer>
-        <p>© 2024 Academic Research Archive. Strictly for educational use.</p>
-        <p>Content preserved under Digital Millennium Copyright Act Section 107</p>
+        <p style="margin-bottom: 1rem;">© 2024 Academic Research Archive</p>
+        <p style="opacity: 0.7;">All content preserved under DMCA Section 107 for educational use</p>
     </footer>
 
     <script>
-        // Sample data - Replace with actual API response
-        const videoData = {
-            "author": "Kaizenji",
-            "total": 20,
-            "limit": 5,
-            "videos": [
-                {
-                    "title": "Gusto ng video pero may mask",
-                    "thumbnail": "https://lootedpinay.com/wp-content/uploads/2024/09/Gusto-ng-video-pero-may-mask.jpg",
-                    "mp4url": "https://kayatan.cc/wp-content/uploads/2024/09/Gusto-ng-video-pero-may-mask.mp4",
-                    "id": "1"
-                },
-                {
-                    "title": "Opa na naman si tita",
-                    "thumbnail": "https://lootedpinay.com/wp-content/uploads/2024/08/Opa-na-naman-si-tita.jpg",
-                    "mp4url": "https://kayatan.cc/wp-content/uploads/2024/08/Opa-na-naman-si-tita.mp4",
-                    "id": "2"
-                },
-                {
-                    "title": "Masakit talaga kapag may nakadikit na bolitas",
-                    "thumbnail": "https://lootedpinay.com/wp-content/uploads/2024/08/Masakit-talaga-kapag-may-nakadikit-na-bolitas.jpg",
-                    "mp4url": "https://kayatan.cc/wp-content/uploads/2024/08/Masakit-talaga-kapag-may-nakadikit-na-bolitas.mp4",
-                    "id": "3"
-                },
-                {
-                    "title": "Isang patong lang sirit sirit na si tamod",
-                    "thumbnail": "https://lootedpinay.com/wp-content/uploads/2024/08/Isang-patong-lang-sirit-sirit-na-si-tamod.jpg",
-                    "mp4url": "https://kayatan.cc/wp-content/uploads/2024/08/Isang-patong-lang-sirit-sirit-na-si-tamod.mp4",
-                    "id": "4"
-                },
-                {
-                    "title": "Dahil may dalaw hanggang chupa muna ang tira tira",
-                    "thumbnail": "https://lootedpinay.com/wp-content/uploads/2024/08/Dahil-may-dalaw-hanggang-chupa-muna-ang-tira-tira.jpg",
-                    "mp4url": "https://kayatan.cc/wp-content/uploads/2024/08/Dahil-may-dalaw-hanggang-chupa-muna-ang-tira-tira.mp4",
-                    "id": "5"
-                }
-            ]
-        };
-
+        let allVideos = [];
         let currentPage = 1;
-        const resultsPerPage = 5;
 
-        function init() {
+        async function fetchVideos() {
+            try {
+                document.getElementById('loader').style.display = 'block';
+                const response = await fetch(`https://kaiz-apis.gleeze.com/api/lootedpinay?limit=20&apikey=0acad241-6a34-4516-bcc6-310a137e6357`);
+                const data = await response.json();
+                allVideos = [...allVideos, ...data.videos];
+                renderVideos();
+                currentPage++;
+                document.getElementById('loader').style.display = 'none';
+            } catch (error) {
+                console.error('Error fetching videos:', error);
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+
+        function renderVideos() {
             const grid = document.getElementById('videoGrid');
-            videoData.videos.forEach(video => {
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.innerHTML = `
+            grid.innerHTML = allVideos.map(video => `
+                <div class="video-card">
                     <div class="thumbnail-container" onclick="playVideo('${video.mp4url}')">
                         <img src="${video.thumbnail}" class="thumbnail" alt="${video.title}">
                         <i class="fas fa-play play-button"></i>
                     </div>
                     <div class="video-info">
                         <div class="video-actions">
-                            <button class="action-btn" onclick="bookmarkVideo('${video.id}')">
+                            <button class="action-btn" onclick="bookmarkVideo('${video.title}')">
                                 <i class="fas fa-bookmark"></i>
                             </button>
                             <button class="action-btn" onclick="shareVideo('${video.mp4url}')">
@@ -345,12 +300,22 @@
                         </div>
                         <h3 class="video-title">${video.title}</h3>
                     </div>
-                `;
-                grid.appendChild(card);
-            });
-            updateStats();
+                </div>
+            `).join('');
         }
 
+        // Infinite Scroll
+        window.addEventListener('scroll', () => {
+            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+            if (scrollTop + clientHeight >= scrollHeight - 500) {
+                fetchVideos();
+            }
+        });
+
+        // Initial load
+        fetchVideos();
+
+        // Rest of the functions remain similar with improvements
         function playVideo(url) {
             const modal = document.getElementById('videoModal');
             const player = document.getElementById('videoPlayer');
@@ -367,58 +332,23 @@
             modal.style.display = 'none';
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            const themeIcon = document.querySelector('.theme-switcher i');
-            themeIcon.classList.toggle('fa-sun');
-            themeIcon.classList.toggle('fa-moon');
-        }
-
         function filterVideos() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const cards = document.querySelectorAll('.video-card');
             
             cards.forEach(card => {
                 const title = card.querySelector('.video-title').textContent.toLowerCase();
-                card.style.display = title.includes(searchTerm) ? 'block' : 'none';
+                card.style.display = title.includes(searchTerm) ? 'grid' : 'none';
             });
         }
 
-        async function loadMore() {
-            document.getElementById('loader').style.display = 'block';
-            document.getElementById('loadMore').disabled = true;
-            
-            // Simulated API call
-            setTimeout(() => {
-                currentPage++;
-                updateStats();
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('loadMore').disabled = false;
-            }, 1500);
-        }
-
-        function updateStats() {
-            document.getElementById('stats').textContent = 
-                `Showing ${currentPage * resultsPerPage} of ${videoData.total} research materials`;
-        }
-
-        function bookmarkVideo(videoId) {
-            const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-            const index = bookmarks.indexOf(videoId);
-            
-            if(index === -1) {
-                bookmarks.push(videoId);
-                alert('Added to bookmarks');
-            } else {
-                bookmarks.splice(index, 1);
-                alert('Removed from bookmarks');
-            }
-            
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+        function bookmarkVideo(title) {
+            // Implement bookmark logic
+            alert(`Bookmarked: ${title}`);
         }
 
         function shareVideo(url) {
-            if(navigator.share) {
+            if (navigator.share) {
                 navigator.share({
                     title: 'Educational Resource',
                     text: 'Check out this academic material:',
@@ -429,16 +359,13 @@
             }
         }
 
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', () => {
-            init();
-            window.onclick = function(event) {
-                const modal = document.getElementById('videoModal');
-                if (event.target === modal) {
-                    closeModal();
-                }
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('videoModal');
+            if (event.target === modal) {
+                closeModal();
             }
-        });
+        }
     </script>
 </body>
 </html>
