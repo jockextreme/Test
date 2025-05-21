@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Educational Research Portal</title>
+    <title>Academic Research Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -27,6 +27,7 @@
             min-height: 100vh;
         }
 
+        /* Header Styles */
         .header {
             background: var(--surface);
             backdrop-filter: blur(10px);
@@ -35,35 +36,32 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-        }
-
-        .disclaimer {
-            background: linear-gradient(90deg, var(--primary), #ff4081);
-            padding: 1.5rem;
-            text-align: center;
-            font-size: 0.9em;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
-        }
-
-        .search-bar {
-            margin: 20px auto;
-            max-width: 800px;
-            padding: 0 2rem;
-        }
-
-        #searchInput {
-            width: 100%;
-            padding: 18px;
-            border-radius: 50px;
-            border: none;
-            background: var(--surface);
-            color: var(--text);
-            font-size: 1.1em;
-            backdrop-filter: blur(5px);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
 
+        /* Content Warning Modal */
+        .warning-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+        }
+
+        .warning-content {
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 600px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* Video Grid */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -73,6 +71,7 @@
             margin: 0 auto;
         }
 
+        /* Video Card Enhancements */
         .video-card {
             background: var(--surface);
             border-radius: 20px;
@@ -81,6 +80,7 @@
             cursor: pointer;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
 
         .video-card:hover {
@@ -88,284 +88,211 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.4);
         }
 
-        .thumbnail-container {
-            position: relative;
+        /* Loading Skeletons */
+        .skeleton {
+            background: var(--surface);
+            border-radius: 20px;
             aspect-ratio: 16/9;
+            animation: pulse 1.5s infinite;
         }
 
-        .thumbnail {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
 
-        .play-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 4rem;
-            color: rgba(255,255,255,0.9);
-            text-shadow: 0 0 20px rgba(0,0,0,0.5);
-            opacity: 0.8;
+        /* Network Status */
+        .network-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            opacity: 0;
             transition: opacity 0.3s;
         }
 
-        .video-card:hover .play-button {
-            opacity: 1;
-        }
-
-        .video-info {
-            padding: 1.5rem;
-            position: relative;
-        }
-
-        .video-title {
-            font-size: 1.2em;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            line-height: 1.4;
-        }
-
-        .video-actions {
+        /* Enhanced Video Player */
+        .custom-player-controls {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            padding: 1rem;
             display: flex;
-            gap: 10px;
-        }
-
-        .action-btn {
-            background: rgba(0,0,0,0.3);
-            border: none;
-            color: white;
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            backdrop-filter: blur(5px);
-        }
-
-        .action-btn:hover {
-            background: var(--primary);
-            transform: scale(1.1);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 2000;
-        }
-
-        .modal-content {
-            position: relative;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 1000px;
-        }
-
-        .video-player {
-            width: 100%;
-            height: 70vh;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: -40px;
-            right: 0;
-            font-size: 2.5rem;
-            cursor: pointer;
-            color: white;
-            transition: color 0.3s;
-        }
-
-        .close-btn:hover {
-            color: var(--primary);
-        }
-
-        .loader {
-            display: none;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        footer {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2rem;
-            text-align: center;
-            margin-top: 3rem;
-            backdrop-filter: blur(10px);
-        }
-
-        @media (max-width: 768px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-                padding: 1rem;
-            }
-            
-            .video-player {
-                height: 50vh;
-            }
+            align-items: center;
+            gap: 15px;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1 style="font-size: 2.5em; letter-spacing: 2px;">📚 Academic Research Portal</h1>
-        <p style="margin-top: 1rem; opacity: 0.8;">For Scholarly Analysis and Educational Purposes</p>
-    </header>
-
-    <div class="disclaimer">
-        ⚠️ This content is preserved under Fair Use doctrine for academic research and critical analysis.
-    </div>
-
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search research materials..." 
-               onkeyup="filterVideos()" style="padding-left: 30px;">
-    </div>
-
-    <div class="grid-container" id="videoGrid"></div>
-
-    <div class="loader" id="loader"></div>
-
-    <div class="modal" id="videoModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <video controls class="video-player" id="videoPlayer">
-                Your browser does not support the video tag.
-            </video>
+    <!-- Content Warning Modal -->
+    <div class="warning-modal" id="warningModal">
+        <div class="warning-content">
+            <h2>Content Advisory</h2>
+            <p>This material is preserved strictly for academic research and educational purposes. Viewer discretion advised.</p>
+            <div style="margin-top: 2rem;">
+                <button onclick="confirmAge()" class="confirm-btn">I confirm I'm 18+</button>
+                <button onclick="closeWarning()" class="cancel-btn">Exit</button>
+            </div>
         </div>
     </div>
 
-    <footer>
-        <p style="margin-bottom: 1rem;">© 2024 Academic Research Archive</p>
-        <p style="opacity: 0.7;">All content preserved under DMCA Section 107 for educational use</p>
-    </footer>
+    <!-- Main Content -->
+    <header class="header">
+        <h1>Academic Research Hub</h1>
+        <p>Preserving Knowledge for Scholarly Analysis</p>
+    </header>
+
+    <div class="grid-container" id="videoGrid">
+        <!-- Skeleton Loading -->
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+    </div>
+
+    <!-- Network Status -->
+    <div class="network-status" id="networkStatus">
+        <i class="fas fa-wifi"></i> Network Status
+    </div>
+
+    <!-- Back to Top -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
 
     <script>
+        let currentVideoUrl = '';
         let allVideos = [];
-        let currentPage = 1;
+        let page = 1;
 
+        // Fetch Videos with Error Handling
         async function fetchVideos() {
             try {
-                document.getElementById('loader').style.display = 'block';
-                const response = await fetch(`https://kaiz-apis.gleeze.com/api/lootedpinay?limit=20&apikey=0acad241-6a34-4516-bcc6-310a137e6357`);
+                showLoader();
+                const response = await fetch(`https://kaiz-apis.gleeze.com/api/lootedpinay?limit=10&page=${page}&apikey=0acad241-6a34-4516-bcc6-310a137e6357`);
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
                 const data = await response.json();
                 allVideos = [...allVideos, ...data.videos];
                 renderVideos();
-                currentPage++;
-                document.getElementById('loader').style.display = 'none';
+                page++;
             } catch (error) {
-                console.error('Error fetching videos:', error);
-                document.getElementById('loader').style.display = 'none';
+                showError('Failed to load research materials. Please try again later.');
+            } finally {
+                hideLoader();
             }
         }
 
+        // Render Videos with Animation
         function renderVideos() {
             const grid = document.getElementById('videoGrid');
-            grid.innerHTML = allVideos.map(video => `
-                <div class="video-card">
-                    <div class="thumbnail-container" onclick="playVideo('${video.mp4url}')">
+            grid.querySelectorAll('.skeleton').forEach(el => el.remove());
+            
+            allVideos.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.innerHTML = `
+                    <div class="thumbnail-container" onclick="showContentWarning('${video.mp4url}')">
                         <img src="${video.thumbnail}" class="thumbnail" alt="${video.title}">
-                        <i class="fas fa-play play-button"></i>
+                        <div class="hover-overlay">
+                            <i class="fas fa-play play-button"></i>
+                            <div class="video-stats">
+                                <span><i class="fas fa-clock"></i> ${video.duration || 'N/A'}</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="video-info">
+                        <h3 class="video-title">${video.title}</h3>
                         <div class="video-actions">
-                            <button class="action-btn" onclick="bookmarkVideo('${video.title}')">
+                            <button class="action-btn" onclick="toggleBookmark(event, '${video.id}')">
                                 <i class="fas fa-bookmark"></i>
                             </button>
                             <button class="action-btn" onclick="shareVideo('${video.mp4url}')">
                                 <i class="fas fa-share"></i>
                             </button>
                         </div>
-                        <h3 class="video-title">${video.title}</h3>
                     </div>
-                </div>
-            `).join('');
-        }
-
-        // Infinite Scroll
-        window.addEventListener('scroll', () => {
-            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            if (scrollTop + clientHeight >= scrollHeight - 500) {
-                fetchVideos();
-            }
-        });
-
-        // Initial load
-        fetchVideos();
-
-        // Rest of the functions remain similar with improvements
-        function playVideo(url) {
-            const modal = document.getElementById('videoModal');
-            const player = document.getElementById('videoPlayer');
-            player.src = url;
-            modal.style.display = 'block';
-            player.play();
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('videoModal');
-            const player = document.getElementById('videoPlayer');
-            player.pause();
-            player.src = '';
-            modal.style.display = 'none';
-        }
-
-        function filterVideos() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.video-card');
-            
-            cards.forEach(card => {
-                const title = card.querySelector('.video-title').textContent.toLowerCase();
-                card.style.display = title.includes(searchTerm) ? 'grid' : 'none';
+                `;
+                grid.appendChild(card);
+                setTimeout(() => card.classList.add('visible'), 100);
             });
         }
 
-        function bookmarkVideo(title) {
-            // Implement bookmark logic
-            alert(`Bookmarked: ${title}`);
+        // Content Warning System
+        function showContentWarning(url) {
+            currentVideoUrl = url;
+            document.getElementById('warningModal').style.display = 'block';
         }
 
-        function shareVideo(url) {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Educational Resource',
-                    text: 'Check out this academic material:',
-                    url: url
-                });
-            } else {
-                prompt('Copy this link:', url);
-            }
+        function confirmAge() {
+            closeWarning();
+            playVideo(currentVideoUrl);
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('videoModal');
-            if (event.target === modal) {
-                closeModal();
-            }
+        // Enhanced Video Player
+        function playVideo(url) {
+            const player = document.createElement('div');
+            player.className = 'video-player-overlay';
+            player.innerHTML = `
+                <video controls autoplay>
+                    <source src="${url}" type="video/mp4">
+                </video>
+                <div class="custom-player-controls">
+                    <button onclick="adjustPlaybackSpeed(0.5)">0.5x</button>
+                    <button onclick="adjustPlaybackSpeed(1)">1x</button>
+                    <button onclick="adjustPlaybackSpeed(1.5)">1.5x</button>
+                    <button onclick="toggleFullScreen()"><i class="fas fa-expand"></i></button>
+                </div>
+            `;
+            document.body.appendChild(player);
         }
+
+        // Network Detection
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+
+        function updateNetworkStatus() {
+            const status = document.getElementById('networkStatus');
+            status.style.display = 'block';
+            status.textContent = navigator.onLine 
+                ? '<i class="fas fa-wifi"></i> Online' 
+                : '<i class="fas fa-unlink"></i> Offline';
+            setTimeout(() => status.style.display = 'none', 3000);
+        }
+
+        // Back to Top
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('backToTop');
+            btn.style.opacity = window.scrollY > 500 ? '1' : '0';
+        });
+
+        document.getElementById('backToTop').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Initial Load
+        fetchVideos();
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+                fetchVideos();
+            }
+        });
     </script>
 </body>
 </html>
