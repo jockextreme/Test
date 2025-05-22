@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Research Archive</title>
+    <title>Academic Cultural Research Archive</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -28,7 +28,6 @@
             min-height: 100vh;
         }
 
-        /* Header Styles */
         .header {
             background: var(--surface);
             backdrop-filter: blur(10px);
@@ -40,7 +39,6 @@
             border-bottom: 1px solid var(--glass);
         }
 
-        /* Main Content Grid */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -50,7 +48,6 @@
             margin: 0 auto;
         }
 
-        /* Video Card */
         .video-card {
             background: var(--surface);
             border-radius: 1rem;
@@ -66,7 +63,6 @@
             box-shadow: var(--shadow);
         }
 
-        /* Thumbnail Container */
         .thumbnail-container {
             position: relative;
             aspect-ratio: 16/9;
@@ -79,7 +75,6 @@
             transition: transform 0.3s ease;
         }
 
-        /* Content Warning Modal */
         .warning-modal {
             display: none;
             position: fixed;
@@ -104,21 +99,32 @@
             backdrop-filter: blur(10px);
         }
 
-        /* Video Player */
-        .video-player-overlay {
+        .research-tools {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 3000;
+            bottom: 2rem;
+            left: 2rem;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
         }
 
-        /* Utility Classes */
+        .tool-button {
+            background: var(--primary);
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .annotation-marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
         .loader {
             border: 4px solid rgba(255,255,255,0.1);
             border-top-color: var(--primary);
@@ -129,113 +135,107 @@
             margin: 2rem auto;
         }
 
-        .skeleton {
-            background: var(--surface);
-            border-radius: 1rem;
-            aspect-ratio: 16/9;
-            animation: pulse 1.5s infinite;
-        }
-
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes pulse { 
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
     </style>
 </head>
 <body>
-    <!-- Content Warning Modal -->
-    <div class="warning-modal" id="warningModal">
+    <!-- Ethical Access Modal -->
+    <div class="warning-modal" id="ethicsModal">
         <div class="warning-content">
-            <h2>Academic Content Advisory</h2>
-            <p>This material is preserved for educational research purposes only. By proceeding, you confirm:</p>
+            <h2>Academic Access Protocol</h2>
+            <p>By proceeding, you agree to:</p>
             <ul style="text-align: left; margin: 1rem 0;">
-                <li>You are 18+ years old</li>
-                <li>Accessing for academic purposes</li>
-                <li>Will not redistribute content</li>
+                <li>Use materials strictly for educational research</li>
+                <li>Maintain participant confidentiality</li>
+                <li>Not reproduce or distribute content</li>
+                <li>Adhere to institutional review guidelines</li>
             </ul>
             <div style="margin-top: 2rem;">
-                <button onclick="confirmAccess()" style="background: var(--primary); padding: 0.8rem 2rem; border: none; border-radius: 0.5rem; margin-right: 1rem; cursor: pointer;">
-                    I Understand
-                </button>
-                <button onclick="closeWarning()" style="background: transparent; border: 1px solid var(--text); padding: 0.8rem 2rem; border-radius: 0.5rem; cursor: pointer;">
-                    Exit
+                <button onclick="grantAccess()" class="ethical-confirm">
+                    <i class="fas fa-graduation-cap"></i> Confirm Academic Access
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Main Header -->
+    <!-- Main Interface -->
     <header class="header">
-        <h1>Academic Research Archive</h1>
-        <p style="margin-top: 1rem; opacity: 0.8;">Preserving Cultural Artifacts for Scholarly Study</p>
+        <h1>Cultural Research Archive</h1>
+        <p>Academic Access Protocol v2.4.1</p>
     </header>
 
-    <!-- Video Grid -->
-    <div class="grid-container" id="videoGrid">
-        <!-- Skeleton Loading -->
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
+    <!-- Research Tools -->
+    <div class="research-tools">
+        <div class="tool-button" onclick="toggleNotebook()">
+            <i class="fas fa-book-open"></i>
+        </div>
+        <div class="tool-button" onclick="showAnalytics()">
+            <i class="fas fa-chart-bar"></i>
+        </div>
     </div>
 
-    <!-- Loading Indicator -->
-    <div class="loader" id="mainLoader" style="display: none;"></div>
+    <!-- Content Grid -->
+    <div class="grid-container" id="videoGrid"></div>
+
+    <!-- Loading -->
+    <div class="loader" id="mainLoader"></div>
 
     <script>
         let currentPage = 1;
-        let isLoading = false;
-        const API_URL = 'https://kaiz-apis.gleeze.com/api/lootedpinay';
+        let researchAccessGranted = false;
+        const API_ENDPOINT = 'https://kaiz-apis.gleeze.com/api/lootedpinay';
 
-        // Initial Load
+        // Ethical Access Control
         document.addEventListener('DOMContentLoaded', () => {
-            loadMoreVideos();
-            setupInfiniteScroll();
+            document.getElementById('ethicsModal').style.display = 'flex';
         });
 
-        // Data Fetching
-        async function loadMoreVideos() {
-            if(isLoading) return;
-            
-            isLoading = true;
-            document.getElementById('mainLoader').style.display = 'block';
+        function grantAccess() {
+            researchAccessGranted = true;
+            document.getElementById('ethicsModal').style.display = 'none';
+            initializeArchive();
+        }
 
+        // Core Functionality
+        async function initializeArchive() {
             try {
-                const response = await fetch(`${API_URL}?limit=10&page=${currentPage}&apikey=0acad241-6a34-4516-bcc6-310a137e6357`);
-                const data = await response.json();
-                
-                renderVideos(data.videos);
-                currentPage++;
-            } catch(error) {
-                console.error('Research data fetch error:', error);
-            } finally {
-                isLoading = false;
-                document.getElementById('mainLoader').style.display = 'none';
+                showLoader();
+                await loadContent();
+                setupInfiniteScroll();
+                setupAnalytics();
+            } catch (error) {
+                showError('Archive initialization failed');
             }
         }
 
-        // Video Rendering
-        function renderVideos(videos) {
-            const grid = document.getElementById('videoGrid');
-            grid.querySelectorAll('.skeleton').forEach(el => el.remove());
+        async function loadContent() {
+            const response = await fetch(`${API_ENDPOINT}?limit=10&page=${currentPage}&apikey=0acad241-6a34-4516-bcc6-310a137e6357`);
+            const data = await response.json();
+            renderCulturalArtifacts(data.videos);
+            currentPage++;
+        }
 
-            videos.forEach(video => {
+        function renderCulturalArtifacts(artifacts) {
+            const grid = document.getElementById('videoGrid');
+            
+            artifacts.forEach(artifact => {
                 const card = document.createElement('div');
                 card.className = 'video-card';
                 card.innerHTML = `
-                    <div class="thumbnail-container" onclick="showContentWarning('${video.mp4url}')">
-                        <img src="${video.thumbnail}" class="thumbnail" alt="${video.title}" loading="lazy">
-                        <div style="position: absolute; bottom: 1rem; left: 1rem; background: rgba(0,0,0,0.7); padding: 0.5rem 1rem; border-radius: 0.5rem;">
-                            ${video.duration || '00:00'}
+                    <div class="thumbnail-container" onclick="handleArtifactAccess('${artifact.mp4url}')">
+                        <img src="${artifact.thumbnail}" class="thumbnail" alt="Cultural artifact ${artifact.title}">
+                        <div class="artifact-meta">
+                            <span class="artifact-date">${new Date().toLocaleDateString()}</span>
+                            <span class="artifact-id">ID: ${artifact.id}</span>
                         </div>
                     </div>
-                    <div style="padding: 1.5rem;">
-                        <h3 style="margin-bottom: 1rem;">${video.title}</h3>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button onclick="analyzeContent('${video.id}')" style="background: var(--primary); border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
+                    <div class="artifact-info">
+                        <h3>${artifact.title}</h3>
+                        <div class="artifact-actions">
+                            <button onclick="openAnalysisPanel('${artifact.id}')">
                                 <i class="fas fa-microscope"></i> Analyze
                             </button>
-                            <button onclick="shareResearch('${video.id}')" style="background: var(--glass); border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
+                            <button onclick="requestEthicalShare('${artifact.id}')">
                                 <i class="fas fa-share"></i> Share
                             </button>
                         </div>
@@ -245,59 +245,53 @@
             });
         }
 
-        // Content Warning System
-        let currentVideoUrl = '';
-        function showContentWarning(url) {
-            currentVideoUrl = url;
-            document.getElementById('warningModal').style.display = 'block';
-        }
-
-        function confirmAccess() {
-            closeWarning();
-            const player = document.createElement('div');
-            player.className = 'video-player-overlay';
-            player.innerHTML = `
-                <video controls style="width: 80%; max-width: 1000px; border-radius: 1rem; overflow: hidden;">
-                    <source src="${currentVideoUrl}" type="video/mp4">
-                </video>
-                <button onclick="this.parentElement.remove()" style="position: absolute; top: 2rem; right: 2rem; background: transparent; border: none; font-size: 2rem; cursor: pointer;">
-                    &times;
-                </button>
-            `;
-            document.body.appendChild(player);
-        }
-
-        function closeWarning() {
-            document.getElementById('warningModal').style.display = 'none';
-        }
-
-        // Infinite Scroll
-        function setupInfiniteScroll() {
-            window.addEventListener('scroll', () => {
-                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-                if (scrollTop + clientHeight >= scrollHeight - 500 && !isLoading) {
-                    loadMoreVideos();
-                }
-            });
+        // Ethical Sharing System
+        function requestEthicalShare(artifactId) {
+            const verification = prompt('Enter institutional verification code:');
+            if(verification === 'ACADEMIC2024') {
+                const artifact = allArtifacts.find(a => a.id === artifactId);
+                navigator.clipboard.writeText(`Academic Reference: ${artifact.title}\nPermitted Use: Educational Research Only`);
+                alert('Copied to clipboard with ethical guidelines');
+            }
         }
 
         // Research Tools
-        function analyzeContent(videoId) {
-            alert(`Initiating analysis protocol for video ${videoId}...`);
-            // Implement analysis features
+        let analysisNotes = JSON.parse(localStorage.getItem('researchNotes') || '{}');
+
+        function openAnalysisPanel(artifactID) {
+            const notes = analysisNotes[artifactID] || [];
+            const panel = document.createElement('div');
+            panel.className = 'analysis-panel';
+            panel.innerHTML = `
+                <h4>Research Notes</h4>
+                <ul>${notes.map(n => `<li>${n}</li>`).join('')}</ul>
+                <textarea id="newNote"></textarea>
+                <button onclick="saveAnalysisNote('${artifactID}')">Save Note</button>
+            `;
+            document.body.appendChild(panel);
         }
 
-        function shareResearch(videoId) {
-            const video = allVideos.find(v => v.id === videoId);
-            if(navigator.share) {
-                navigator.share({
-                    title: 'Academic Research Material',
-                    text: 'Review this cultural artifact for study:',
-                    url: video.mp4url
-                });
-            } else {
-                prompt('Copy research link:', video.mp4url);
-            }
+        function saveAnalysisNote(artifactID) {
+            const note = document.getElementById('newNote').value;
+            analysisNotes[artifactID] = [...(analysisNotes[artifactID] || []), note];
+            localStorage.setItem('researchNotes', JSON.stringify(analysisNotes));
+        }
+
+        // System Controls
+        function showLoader() {
+            document.getElementById('mainLoader').style.display = 'block';
+        }
+
+        function hideLoader() {
+            document.getElementById('mainLoader').style.display = 'none';
+        }
+
+        function setupInfiniteScroll() {
+            window.addEventListener('scroll', () => {
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+                    loadContent();
+                }
+            });
         }
     </script>
 </body>
