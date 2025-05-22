@@ -3,275 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Media Archive</title>
+    <title>Academic Research Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #e91e63;
-            --secondary: #2196f3;
-            --background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            --surface: rgba(255, 255, 255, 0.05);
-            --text: #ffffff;
-            --glass: rgba(255, 255, 255, 0.1);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: var(--background);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        .header {
-            background: var(--surface);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--glass);
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
-            max-width: 1440px;
-            margin: 0 auto;
-        }
-
-        .video-card {
-            background: var(--surface);
-            border-radius: 1rem;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass);
-        }
-
-        .video-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow);
-        }
-
-        .thumbnail-container {
-            position: relative;
-            aspect-ratio: 16/9;
-        }
-
-        .thumbnail {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 1rem 1rem 0 0;
-        }
-
-        .play-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0,0,0,0.3);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .video-card:hover .play-overlay {
-            opacity: 1;
-        }
-
-        .video-info {
-            padding: 1.5rem;
-        }
-
-        .video-title {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .video-modal {
-            display: none;
+        /* Enhanced Content Safety Styles */
+        .safety-gate {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .modal-content {
-            position: relative;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 1000px;
-            background: var(--surface);
-            border-radius: 1rem;
-            padding: 2rem;
+        .content-blur {
+            filter: blur(20px);
+            pointer-events: none;
+            transition: filter 0.3s ease;
         }
 
-        #videoPlayer {
-            width: 100%;
-            height: 60vh;
-            border-radius: 1rem;
-            background: #000;
-        }
-
-        .close-btn {
+        .watermark {
             position: absolute;
-            top: -40px;
-            right: 0;
+            opacity: 0.3;
             font-size: 2rem;
-            cursor: pointer;
-            color: var(--text);
+            pointer-events: none;
+            transform: rotate(-30deg);
         }
 
-        .loader {
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
-            display: none;
+        /* UX Improvement: Advanced Search */
+        .search-panel {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem auto;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* UX Improvement: Collections */
+        .collection-sidebar {
+            position: fixed;
+            right: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: var(--surface);
+            transition: right 0.3s ease;
+            padding: 1rem;
+        }
+
+        /* UX Improvement: History */
+        .history-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--surface);
+            max-height: 200px;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Academic Research Archive</h1>
-        <p>For Educational Purposes Only</p>
-    </header>
-
-    <div class="grid-container" id="videoGrid"></div>
-    <div class="loader" id="loader"></div>
-
-    <div class="video-modal" id="videoModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <video controls id="videoPlayer">
-                Your browser does not support the video tag.
-            </video>
+    <!-- Enhanced Content Safety -->
+    <div class="safety-gate" id="safetyGate">
+        <div class="safety-content">
+            <h2>Academic Access Verification</h2>
+            <div class="verification-form">
+                <input type="email" placeholder="Institutional Email" id="academicEmail">
+                <label>
+                    <input type="checkbox" id="ethicsAgreement">
+                    I agree to use this content for academic research only
+                </label>
+                <button onclick="verifyAccess()">Verify Academic Status</button>
+            </div>
         </div>
     </div>
 
+    <!-- UX: Advanced Search -->
+    <div class="search-panel">
+        <input type="text" placeholder="Keywords" id="searchKeywords">
+        <select id="filterDate">
+            <option value="all">All Dates</option>
+            <option value="2024">2024</option>
+        </select>
+        <select id="filterType">
+            <option value="all">All Content Types</option>
+            <option value="interview">Interviews</option>
+        </select>
+    </div>
+
+    <!-- UX: Collections Sidebar -->
+    <div class="collection-sidebar" id="collectionPanel">
+        <h3>My Research Collections</h3>
+        <div class="collection-list" id="collections"></div>
+        <button onclick="createCollection()">New Collection</button>
+    </div>
+
+    <!-- UX: History Panel -->
+    <div class="history-panel" id="historyPanel">
+        <h4>Research History</h4>
+        <div id="historyList"></div>
+    </div>
+
     <script>
-        let currentPage = 1;
-        let isLoading = false;
-        const API_URL = 'https://kaiz-apis.gleeze.com/api/lootedpinay';
+        // Enhanced Content Safety
+        let accessVerified = false;
 
-        // Video Playback Functions
-        function playVideo(url) {
-            const modal = document.getElementById('videoModal');
-            const player = document.getElementById('videoPlayer');
-            
-            player.src = url;
-            modal.style.display = 'block';
-            player.play();
-            
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closeModal();
+        function verifyAccess() {
+            const email = document.getElementById('academicEmail').value;
+            const agreed = document.getElementById('ethicsAgreement').checked;
+
+            if (validateAcademicEmail(email) && agreed) {
+                accessVerified = true;
+                document.getElementById('safetyGate').style.display = 'none';
+                document.body.classList.remove('content-blur');
+                initializeWatermarks();
+                localStorage.setItem('accessVerified', 'true');
+            }
+        }
+
+        function validateAcademicEmail(email) {
+            return email.endsWith('.edu') || email.includes('academic.');
+        }
+
+        function initializeWatermarks() {
+            const watermark = document.createElement('div');
+            watermark.className = 'watermark';
+            watermark.textContent = 'EDUCATIONAL USE ONLY';
+            document.body.appendChild(watermark);
+        }
+
+        // UX: Search Implementation
+        const searchKeywords = document.getElementById('searchKeywords');
+        searchKeywords.addEventListener('input', debounce(searchContent, 300));
+
+        function searchContent() {
+            const term = searchKeywords.value.toLowerCase();
+            // Implement search logic
+        }
+
+        // UX: Collections System
+        let collections = JSON.parse(localStorage.getItem('collections') || [];
+
+        function createCollection() {
+            const name = prompt('Enter collection name:');
+            if (name) {
+                collections.push({ name, items: [] });
+                saveCollections();
+                renderCollections();
+            }
+        }
+
+        function saveCollections() {
+            localStorage.setItem('collections', JSON.stringify(collections));
+        }
+
+        // UX: Research History
+        let researchHistory = JSON.parse(localStorage.getItem('history') || []);
+
+        function addToHistory(video) {
+            researchHistory.unshift({
+                title: video.title,
+                timestamp: new Date().toISOString(),
+                duration: video.duration
             });
+            localStorage.setItem('history', JSON.stringify(researchHistory));
+            renderHistory();
         }
 
-        function closeModal() {
-            const modal = document.getElementById('videoModal');
-            const player = document.getElementById('videoPlayer');
-            
-            player.pause();
-            player.currentTime = 0;
-            modal.style.display = 'none';
-        }
-
-        // Infinite Scroll Implementation
-        async function loadMoreVideos() {
-            if (isLoading) return;
-            
-            isLoading = true;
-            document.getElementById('loader').style.display = 'block';
-
-            try {
-                const response = await fetch(`${API_URL}?limit=5&page=${currentPage}&apikey=0acad241-6a34-4516-bcc6-310a137e6357`);
-                const data = await response.json();
-                
-                if (data.videos.length > 0) {
-                    populateGrid(data.videos);
-                    currentPage++;
-                }
-            } catch (error) {
-                console.error('Error loading content:', error);
-            } finally {
-                isLoading = false;
-                document.getElementById('loader').style.display = 'none';
+        // Initialize UX Features
+        function initUX() {
+            if (accessVerified) {
+                renderCollections();
+                renderHistory();
+                setupHistoryToggle();
             }
         }
 
-        function populateGrid(videos) {
-            const grid = document.getElementById('videoGrid');
-            
-            videos.forEach(video => {
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.innerHTML = `
-                    <div class="thumbnail-container" onclick="playVideo('${video.mp4url}')">
-                        <img src="${video.thumbnail}" class="thumbnail" alt="${video.title}">
-                        <div class="play-overlay">
-                            <i class="fas fa-play fa-3x"></i>
-                        </div>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">${video.title}</h3>
-                        <div class="video-meta">
-                            <span class="date">${new Date().toLocaleDateString()}</span>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
+        // Utility Functions
+        function debounce(func, timeout = 300){
+            let timer;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => { func.apply(this, args); }, timeout);
+            };
         }
-
-        // Scroll Event Listener
-        window.addEventListener('scroll', () => {
-            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            
-            if (scrollTop + clientHeight >= scrollHeight - 500 && !isLoading) {
-                loadMoreVideos();
-            }
-        });
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('videoModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
-
-        // Initial load
-        loadMoreVideos();
     </script>
 </body>
 </html>
