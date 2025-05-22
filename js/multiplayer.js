@@ -19,8 +19,8 @@ function createNewGame(gameId) {
     set(ref(database, `games/${gameId}/${gameKey}`), {
         players: {
             [playerId]: {
-                x: 50,
-                y: 50
+                x: Math.random() * 500 + 50, // Spread initial positions
+                y: Math.random() * 300 + 50
             }
         },
         gameState: {},
@@ -35,8 +35,8 @@ function joinGame(gameId, gameKey) {
     currentGameRef = ref(database, `games/${gameId}/${gameKey}`);
     playerId = auth.currentUser ? auth.currentUser.uid : generateRandomId();
     set(ref(database, `games/${gameId}/${gameKey}/players/${playerId}`), {
-        x: Math.random() * 500,
-        y: Math.random() * 300
+        x: Math.random() * 500 + 50, // Spread initial positions
+        y: Math.random() * 300 + 50
     }).then(() => {
         setupRealtimeListeners(gameId, gameKey);
         document.getElementById('game-selection').style.display = 'none';
@@ -159,4 +159,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-            
