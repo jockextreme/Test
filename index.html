@@ -3,200 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Research Portal</title>
+    <title>NeoGames - Multiverse Arena</title>
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* Enhanced Content Safety Styles */
-        .safety-gate {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 3000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .content-blur {
-            filter: blur(20px);
-            pointer-events: none;
-            transition: filter 0.3s ease;
-        }
-
-        .watermark {
-            position: absolute;
-            opacity: 0.3;
-            font-size: 2rem;
-            pointer-events: none;
-            transform: rotate(-30deg);
-        }
-
-        /* UX Improvement: Advanced Search */
-        .search-panel {
-            background: var(--surface);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin: 1rem auto;
-            max-width: 800px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        /* UX Improvement: Collections */
-        .collection-sidebar {
-            position: fixed;
-            right: -300px;
-            top: 0;
-            width: 300px;
-            height: 100vh;
-            background: var(--surface);
-            transition: right 0.3s ease;
-            padding: 1rem;
-        }
-
-        /* UX Improvement: History */
-        .history-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--surface);
-            max-height: 200px;
-            overflow-y: auto;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-        }
-    </style>
 </head>
 <body>
-    <!-- Enhanced Content Safety -->
-    <div class="safety-gate" id="safetyGate">
-        <div class="safety-content">
-            <h2>Academic Access Verification</h2>
-            <div class="verification-form">
-                <input type="email" placeholder="Institutional Email" id="academicEmail">
-                <label>
-                    <input type="checkbox" id="ethicsAgreement">
-                    I agree to use this content for academic research only
-                </label>
-                <button onclick="verifyAccess()">Verify Academic Status</button>
+    <div class="dimensional-portal">
+        <div class="holographic-ui">
+            <div class="quantum-lobby">
+                <div id="user-profile" class="neon-glow"></div>
+                <div id="multiverse-arena"></div>
+                <div class="temporal-chat"></div>
+            </div>
+            <div class="gravitational-gameboard">
+                <canvas id="quantum-canvas"></canvas>
+                <div class="reality-overlay"></div>
             </div>
         </div>
     </div>
 
-    <!-- UX: Advanced Search -->
-    <div class="search-panel">
-        <input type="text" placeholder="Keywords" id="searchKeywords">
-        <select id="filterDate">
-            <option value="all">All Dates</option>
-            <option value="2024">2024</option>
-        </select>
-        <select id="filterType">
-            <option value="all">All Content Types</option>
-            <option value="interview">Interviews</option>
-        </select>
-    </div>
-
-    <!-- UX: Collections Sidebar -->
-    <div class="collection-sidebar" id="collectionPanel">
-        <h3>My Research Collections</h3>
-        <div class="collection-list" id="collections"></div>
-        <button onclick="createCollection()">New Collection</button>
-    </div>
-
-    <!-- UX: History Panel -->
-    <div class="history-panel" id="historyPanel">
-        <h4>Research History</h4>
-        <div id="historyList"></div>
-    </div>
-
-    <script>
-        // Enhanced Content Safety
-        let accessVerified = false;
-
-        function verifyAccess() {
-            const email = document.getElementById('academicEmail').value;
-            const agreed = document.getElementById('ethicsAgreement').checked;
-
-            if (validateAcademicEmail(email) && agreed) {
-                accessVerified = true;
-                document.getElementById('safetyGate').style.display = 'none';
-                document.body.classList.remove('content-blur');
-                initializeWatermarks();
-                localStorage.setItem('accessVerified', 'true');
-            }
-        }
-
-        function validateAcademicEmail(email) {
-            return email.endsWith('.edu') || email.includes('academic.');
-        }
-
-        function initializeWatermarks() {
-            const watermark = document.createElement('div');
-            watermark.className = 'watermark';
-            watermark.textContent = 'EDUCATIONAL USE ONLY';
-            document.body.appendChild(watermark);
-        }
-
-        // UX: Search Implementation
-        const searchKeywords = document.getElementById('searchKeywords');
-        searchKeywords.addEventListener('input', debounce(searchContent, 300));
-
-        function searchContent() {
-            const term = searchKeywords.value.toLowerCase();
-            // Implement search logic
-        }
-
-        // UX: Collections System
-        let collections = JSON.parse(localStorage.getItem('collections') || [];
-
-        function createCollection() {
-            const name = prompt('Enter collection name:');
-            if (name) {
-                collections.push({ name, items: [] });
-                saveCollections();
-                renderCollections();
-            }
-        }
-
-        function saveCollections() {
-            localStorage.setItem('collections', JSON.stringify(collections));
-        }
-
-        // UX: Research History
-        let researchHistory = JSON.parse(localStorage.getItem('history') || []);
-
-        function addToHistory(video) {
-            researchHistory.unshift({
-                title: video.title,
-                timestamp: new Date().toISOString(),
-                duration: video.duration
-            });
-            localStorage.setItem('history', JSON.stringify(researchHistory));
-            renderHistory();
-        }
-
-        // Initialize UX Features
-        function initUX() {
-            if (accessVerified) {
-                renderCollections();
-                renderHistory();
-                setupHistoryToggle();
-            }
-        }
-
-        // Utility Functions
-        function debounce(func, timeout = 300){
-            let timer;
-            return (...args) => {
-                clearTimeout(timer);
-                timer = setTimeout(() => { func.apply(this, args); }, timeout);
-            };
-        }
-    </script>
+    <script src="quantum-engine.js"></script>
+    <script src="reality-core.js"></script>
 </body>
 </html>
