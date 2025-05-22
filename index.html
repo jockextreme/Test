@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Cultural Research Archive</title>
+    <title>Advanced Research Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -15,107 +15,34 @@
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: var(--background);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        .header {
+        /* New Feature: Advanced Filter Panel */
+        .filter-panel {
             background: var(--surface);
             backdrop-filter: blur(10px);
-            padding: 2rem;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--glass);
-        }
-
-        .grid-container {
+            padding: 1.5rem;
+            margin: 1rem auto;
+            max-width: 1200px;
+            border-radius: 1rem;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
-            max-width: 1440px;
-            margin: 0 auto;
-        }
-
-        .video-card {
-            background: var(--surface);
-            border-radius: 1rem;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass);
-        }
-
-        .video-card:hover {
-            transform: translateY(-0.5rem);
-            box-shadow: var(--shadow);
-        }
-
-        .thumbnail-container {
-            position: relative;
-            aspect-ratio: 16/9;
-        }
-
-        .thumbnail {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .warning-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 2000;
-        }
-
-        .warning-content {
-            position: relative;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            max-width: 600px;
-            padding: 2rem;
-            text-align: center;
-            background: var(--surface);
-            border-radius: 1rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .research-tools {
-            position: fixed;
-            bottom: 2rem;
-            left: 2rem;
-            display: flex;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            z-index: 1000;
         }
 
-        .tool-button {
-            background: var(--primary);
-            padding: 1rem;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.3s ease;
+        /* New Feature: Research Notebook */
+        .notebook-sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            transition: right 0.3s ease;
+            padding: 2rem;
+            overflow-y: auto;
         }
 
+        /* New Feature: Collaborative Annotation */
         .annotation-marker {
             position: absolute;
             width: 24px;
@@ -125,174 +52,138 @@
             cursor: pointer;
         }
 
-        .loader {
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
+        /* New Feature: Video Timeline Analysis */
+        .timeline-container {
+            position: relative;
+            height: 80px;
+            background: var(--surface);
+            margin: 1rem 0;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* New Feature: Research Metrics Dashboard */
+        .metrics-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: 1rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+        }
     </style>
 </head>
 <body>
-    <!-- Ethical Access Modal -->
-    <div class="warning-modal" id="ethicsModal">
-        <div class="warning-content">
-            <h2>Academic Access Protocol</h2>
-            <p>By proceeding, you agree to:</p>
-            <ul style="text-align: left; margin: 1rem 0;">
-                <li>Use materials strictly for educational research</li>
-                <li>Maintain participant confidentiality</li>
-                <li>Not reproduce or distribute content</li>
-                <li>Adhere to institutional review guidelines</li>
-            </ul>
-            <div style="margin-top: 2rem;">
-                <button onclick="grantAccess()" class="ethical-confirm">
-                    <i class="fas fa-graduation-cap"></i> Confirm Academic Access
-                </button>
-            </div>
+    <!-- New Feature: Research Notebook Toggle -->
+    <button class="notebook-toggle" onclick="toggleNotebook()">
+        <i class="fas fa-book-open"></i>
+    </button>
+
+    <!-- New Feature: Research Notebook -->
+    <div class="notebook-sidebar" id="researchNotebook">
+        <h3>Research Notes</h3>
+        <div id="noteContainer"></div>
+        <textarea id="newNote" placeholder="Record academic observations..."></textarea>
+        <button onclick="saveNote()">Save Note</button>
+    </div>
+
+    <!-- New Feature: Advanced Filters -->
+    <div class="filter-panel">
+        <div>
+            <label>Content Type:</label>
+            <select id="contentType">
+                <option value="all">All Materials</option>
+                <option value="cultural">Cultural Analysis</option>
+                <option value="historical">Historical Context</option>
+            </select>
+        </div>
+        <div>
+            <label>Date Range:</label>
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+        </div>
+        <div>
+            <label>Duration:</label>
+            <input type="range" id="durationFilter" min="0" max="120">
         </div>
     </div>
 
-    <!-- Main Interface -->
-    <header class="header">
-        <h1>Cultural Research Archive</h1>
-        <p>Academic Access Protocol v2.4.1</p>
-    </header>
-
-    <!-- Research Tools -->
-    <div class="research-tools">
-        <div class="tool-button" onclick="toggleNotebook()">
-            <i class="fas fa-book-open"></i>
+    <!-- New Feature: Research Metrics -->
+    <div class="metrics-dashboard">
+        <div class="metric-card">
+            <h4>Total Artifacts</h4>
+            <span id="totalCount">0</span>
         </div>
-        <div class="tool-button" onclick="showAnalytics()">
-            <i class="fas fa-chart-bar"></i>
+        <div class="metric-card">
+            <h4>Analysis Completed</h4>
+            <span id="analysisCount">0</span>
         </div>
     </div>
-
-    <!-- Content Grid -->
-    <div class="grid-container" id="videoGrid"></div>
-
-    <!-- Loading -->
-    <div class="loader" id="mainLoader"></div>
 
     <script>
-        let currentPage = 1;
-        let researchAccessGranted = false;
-        const API_ENDPOINT = 'https://kaiz-apis.gleeze.com/api/lootedpinay';
+        // New Feature: Collaborative Annotations
+        let annotations = [];
 
-        // Ethical Access Control
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('ethicsModal').style.display = 'flex';
-        });
-
-        function grantAccess() {
-            researchAccessGranted = true;
-            document.getElementById('ethicsModal').style.display = 'none';
-            initializeArchive();
-        }
-
-        // Core Functionality
-        async function initializeArchive() {
-            try {
-                showLoader();
-                await loadContent();
-                setupInfiniteScroll();
-                setupAnalytics();
-            } catch (error) {
-                showError('Archive initialization failed');
-            }
-        }
-
-        async function loadContent() {
-            const response = await fetch(`${API_ENDPOINT}?limit=10&page=${currentPage}&apikey=0acad241-6a34-4516-bcc6-310a137e6357`);
-            const data = await response.json();
-            renderCulturalArtifacts(data.videos);
-            currentPage++;
-        }
-
-        function renderCulturalArtifacts(artifacts) {
-            const grid = document.getElementById('videoGrid');
+        function createAnnotation(event) {
+            const rect = event.target.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
             
-            artifacts.forEach(artifact => {
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.innerHTML = `
-                    <div class="thumbnail-container" onclick="handleArtifactAccess('${artifact.mp4url}')">
-                        <img src="${artifact.thumbnail}" class="thumbnail" alt="Cultural artifact ${artifact.title}">
-                        <div class="artifact-meta">
-                            <span class="artifact-date">${new Date().toLocaleDateString()}</span>
-                            <span class="artifact-id">ID: ${artifact.id}</span>
-                        </div>
-                    </div>
-                    <div class="artifact-info">
-                        <h3>${artifact.title}</h3>
-                        <div class="artifact-actions">
-                            <button onclick="openAnalysisPanel('${artifact.id}')">
-                                <i class="fas fa-microscope"></i> Analyze
-                            </button>
-                            <button onclick="requestEthicalShare('${artifact.id}')">
-                                <i class="fas fa-share"></i> Share
-                            </button>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
+            const marker = document.createElement('div');
+            marker.className = 'annotation-marker';
+            marker.style.left = `${x}px`;
+            marker.style.top = `${y}px`;
+            marker.onclick = () => showAnnotationDialog(x, y);
+            
+            event.target.parentElement.appendChild(marker);
+            annotations.push({ x, y, note: '' });
         }
 
-        // Ethical Sharing System
-        function requestEthicalShare(artifactId) {
-            const verification = prompt('Enter institutional verification code:');
-            if(verification === 'ACADEMIC2024') {
-                const artifact = allArtifacts.find(a => a.id === artifactId);
-                navigator.clipboard.writeText(`Academic Reference: ${artifact.title}\nPermitted Use: Educational Research Only`);
-                alert('Copied to clipboard with ethical guidelines');
+        // New Feature: Research Notebook System
+        function toggleNotebook() {
+            const notebook = document.getElementById('researchNotebook');
+            notebook.style.right = notebook.style.right === '-400px' ? '0' : '-400px';
+        }
+
+        // New Feature: Advanced Search Filters
+        function applyFilters() {
+            const contentType = document.getElementById('contentType').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const duration = document.getElementById('durationFilter').value;
+            
+            // Implement filter logic
+        }
+
+        // New Feature: Timeline Analysis
+        function generateTimeline(videoId) {
+            const timeline = document.createElement('div');
+            timeline.className = 'timeline-container';
+            // Add timeline visualization logic
+            return timeline;
+        }
+
+        // New Feature: Research Metrics
+        function updateMetrics() {
+            document.getElementById('totalCount').textContent = allVideos.length;
+            // Add other metric calculations
+        }
+
+        // New Feature: Content Download Permission
+        function requestDownload(url) {
+            const password = prompt('Enter research authorization code:');
+            if(password === 'ACADEMIC2024') {
+                initiateDownload(url);
             }
         }
 
-        // Research Tools
-        let analysisNotes = JSON.parse(localStorage.getItem('researchNotes') || '{}');
-
-        function openAnalysisPanel(artifactID) {
-            const notes = analysisNotes[artifactID] || [];
-            const panel = document.createElement('div');
-            panel.className = 'analysis-panel';
-            panel.innerHTML = `
-                <h4>Research Notes</h4>
-                <ul>${notes.map(n => `<li>${n}</li>`).join('')}</ul>
-                <textarea id="newNote"></textarea>
-                <button onclick="saveAnalysisNote('${artifactID}')">Save Note</button>
-            `;
-            document.body.appendChild(panel);
-        }
-
-        function saveAnalysisNote(artifactID) {
-            const note = document.getElementById('newNote').value;
-            analysisNotes[artifactID] = [...(analysisNotes[artifactID] || []), note];
-            localStorage.setItem('researchNotes', JSON.stringify(analysisNotes));
-        }
-
-        // System Controls
-        function showLoader() {
-            document.getElementById('mainLoader').style.display = 'block';
-        }
-
-        function hideLoader() {
-            document.getElementById('mainLoader').style.display = 'none';
-        }
-
-        function setupInfiniteScroll() {
-            window.addEventListener('scroll', () => {
-                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
-                    loadContent();
-                }
-            });
-        }
+        // Initialize new features
+        document.addEventListener('DOMContentLoaded', () => {
+            updateMetrics();
+            setupAnnotationHandlers();
+        });
     </script>
 </body>
 </html>
