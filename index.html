@@ -1,85 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Emoji Battle Arena</title>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Games</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="js/main.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Emoji Game Lobby</h1>
+    <div class="container">
+        <header>
+            <h1>Pixel Play</h1>
+        </header>
+        <main>
+            <section id="game-selection">
+                <h2>Select a Game</h2>
+                <div class="game-list">
+                    <button class="game-button" id="play-game-1" data-game-id="game-1">Simple Circles</button>
+                    <button class="game-button" id="play-game-2" data-game-id="game-2" disabled>Coming Soon</button>
+                    </div>
+            </section>
 
-    <div id="lobby">
-      <input type="text" id="room-code" placeholder="Enter room code..."/>
-      <button onclick="createRoom()">Create Room</button>
-      <button onclick="joinRoom()">Join Room</button>
+            <section id="game-area" style="display: none;">
+                <h2>Playing: <span id="current-game-title"></span></h2>
+                <div class="game-container">
+                    <canvas id="game-canvas" width="600" height="400"></canvas>
+                    <div id="game-controls">
+                        </div>
+                </div>
+                <div class="chat-container">
+                    <h3>Chat</h3>
+                    <div id="chat-messages">
+                        </div>
+                    <div class="chat-input">
+                        <input type="text" id="chat-input" placeholder="Enter your message...">
+                        <button id="send-chat">Send</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="user-settings">
+                <h2>Settings</h2>
+                <div class="setting-item">
+                    <label for="volume">Volume:</label>
+                    <input type="range" id="volume" min="0" max="1" step="0.1">
+                </div>
+                </section>
+        </main>
+        <footer>
+            <p>&copy; 2025 Pixel Play</p>
+        </footer>
     </div>
-
-    <div id="game-select" class="hidden">
-      <h2>Select Game Mode</h2>
-      <button onclick="selectGame('battle')">Emoji Battle</button>
-      <button onclick="selectGame('tictactoe')">Tic Tac Toe</button>
-    </div>
-
-    <div id="game-area" class="hidden">
-      <div id="avatars-area">
-        <div class="player" id="player1">
-          <h2>Player 1</h2>
-          <div class="avatar" id="avatar1">😀</div>
-          <input type="file" id="upload1" accept="image/*"/>
-          <button onclick="setRandomAvatar(1)">Random Emoji</button>
-        </div>
-        <div class="player" id="player2">
-          <h2>Player 2</h2>
-          <div class="avatar" id="avatar2">😎</div>
-          <input type="file" id="upload2" accept="image/*"/>
-          <button onclick="setRandomAvatar(2)">Random Emoji</button>
-        </div>
-      </div>
-
-      <div class="shop">
-        <h3>Power-Ups Shop</h3>
-        <button onclick="buyPower('heal')">Heal +10 (2 coins)</button>
-        <button onclick="buyPower('double')">Double Attack (3 coins)</button>
-        <button onclick="buyPower('shield')">Shield (3 coins)</button>
-      </div>
-
-      <div id="battle-area" class="hidden">
-        <div id="health-bars">
-          <div>❤️ <span id="hp1">100</span></div>
-          <div>❤️ <span id="hp2">100</span></div>
-        </div>
-        <div id="actions">
-          <button onclick="makeMove('attack')">Attack</button>
-          <button onclick="makeMove('defend')">Defend</button>
-          <button onclick="makeMove('power')">Power-up</button>
-        </div>
-        <div id="turn">Turn: Player 1</div>
-        <div id="timer">Time Left: <span id="time">10</span>s</div>
-      </div>
-
-      <div id="tictactoe-area" class="hidden">
-        <h2>Tic Tac Toe</h2>
-        <div class="board" id="ttt-board"></div>
-        <div id="ttt-status"></div>
-        <button onclick="resetTicTacToe()">Reset Game</button>
-      </div>
-
-      <div class="chat-box">
-        <h3>Chat</h3>
-        <div id="chat-log"></div>
-        <input type="text" id="chat-input" placeholder="Type a message..."/>
-        <button onclick="sendMessage()">Send</button>
-      </div>
-
-      <div class="leaderboard">
-        <h3>Leaderboard</h3>
-        <ul id="leaderboard-list"></ul>
-      </div>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
 </body>
 </html>
